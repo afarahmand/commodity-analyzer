@@ -16,7 +16,7 @@ I propose using the Quandl API to access stock and commodity data.
 <h2>Wireframes</h2>
 The app will include a single screen with the first and second charts together with an input text box and a submit button.
 
-[[https://raw.githubusercontent.com/afarahmand/stock-alerter/master/stock_alerter.png]]
+[https://raw.githubusercontent.com/afarahmand/stock-alerter/master/stock_alerter.png]
 (Stock Alerter)
 
 <h2>Architecture and Technologies</h2>
