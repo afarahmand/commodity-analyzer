@@ -5,7 +5,7 @@ Stock alerter is a tool using D3 to chart information related to stocks and comm
 
 Users input a stock, commodity, or a combination thereof expressed as a mathematical equation, and are shown historical information about their selection.  Since a stock has multiple values throughout a day, I anticipate using only one or more of the close price, minimum, or maximum price.
 
-I propose using the Quandl API to access stock and commodity data.
+Stock Alerter will use the Quandl API to access stock and commodity data.
 
 <h2>Functionality & MVP</h2>
 
