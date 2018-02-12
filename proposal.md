@@ -29,10 +29,12 @@ The following technologies will be used for this project:
 </ul>
 
 It is anticipated that there will be 4 scripts in addition to the webpack entry file:
-d3.js - the standard D3 library for charting
-quandl_util.js - a script for constructing one or more requests to the Quandl API based on a user selected stock, commodity, or combination thereof
-chart1.js - a script for creating a D3 line chart based on the user selected input that displays either a chart of time vs. price or time vs. the result of the mathematical expression
-chart2.js - a script for creating a D3 chart of the probability mass function based on the selected input
+<ul>
+  <li>d3.js - the standard D3 library for charting</li>
+  <li>quandl_util.js - a script for constructing one or more requests to the Quandl API based on a user selected stock, commodity, or combination thereof</li>
+  <li>chart1.js - a script for creating a D3 line chart based on the user selected input that displays either a chart of time vs. price or time vs. the result of the mathematical expression</li>
+  <li>chart2.js - a script for creating a D3 chart of the probability mass function based on the selected input</li>
+</ul>
 
 <h2>Implementation Timeline</h2>
 <h3>Weekend</h3>
