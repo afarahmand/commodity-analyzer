@@ -1,0 +1,16 @@
+.chart {
+  border: 1px solid black;
+}
+
+.chart div {
+	font: 14px sans-serif;
+	background-color: steelblue;
+	text-align: right;
+	padding: 6px;
+	margin: 2px;
+	color: white;
+}
+
+circle {
+  color: white;
+}
