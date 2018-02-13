@@ -2,16 +2,19 @@
 <html>
   <head>
     <link rel="stylesheet" href="./stylesheets/index.css">
+    <link rel="stylesheet" href="./stylesheets/reset.css">
     <meta charset="utf-8">
     <title>Stock Alerter</title>
   </head>
   <body>
-    <svg width="100" height="100">
-      <circle cx="50" cy="50" r="25" fill="green" stroke="black"></circle>
+    <!-- <div class="chart"></div> -->
+    <svg id="chart1" class="chart">
+      <!-- <line x1="0" y1="400" x2="100" y2="300" style="stroke:red;stroke-width:2" />
+      <line x1="100" y1="300" x2="200" y2="100" style="stroke:red;stroke-width:2" />
+      <line x1="200" y1="100" x2="300" y2="200" style="stroke:red;stroke-width:2" /> -->
     </svg>
-    <div class="chart"></div>
   </body>
 </html>
 
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
 <script src='./javascripts/chart1.js'></script>
