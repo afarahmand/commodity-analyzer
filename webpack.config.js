@@ -1,8 +1,9 @@
 var path = require("path");
+const webpack = require('webpack');
 
 module.exports = {
   context: __dirname,
-  entry: "./entry.js",
+  entry: "./javascripts/entry.js",
   output: {
     path: path.resolve(__dirname, 'javascripts'),
     filename: "bundle.js"
