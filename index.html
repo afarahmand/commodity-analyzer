@@ -6,12 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
     </script>
     <script src="./javascripts/bundle.js"></script>
-
-    <!-- <script type="text/javascript">
-      const handleSelectedCommodity = (radioButton) => {
-        console.log(radioButton.value);
-      };
-    </script> -->
+    
     <meta charset="utf-8">
     <title>Stock Alerter</title>
   </head>
@@ -20,49 +15,37 @@
       <form id="radio-buttons">
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Copper" checked
+          <input id="rb0" type="radio" name="selected-commodity" value="Copper" checked
           />
           Copper
         </label>
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Crude Oil"
+          <input id="rb1" type="radio" name="selected-commodity" value="Crude Oil"
           />
           Crude Oil
         </label>
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Gold"
+          <input id="rb2" type="radio" name="selected-commodity" value="Gold"
           />
           Gold
         </label>
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Palladium"
+          <input id="rb3" type="radio" name="selected-commodity" value="Palladium"
           />
           Palladium
         </label>
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Platinum"
+          <input id="rb4" type="radio" name="selected-commodity" value="Platinum"
           />
           Platinum
         </label>
 
         <label>
-          <input
-            onchange="handleSelectedCommodity(this);"
-            type="radio" name="selected-commodity" value="Silver"
+          <input id="rb5" type="radio" name="selected-commodity" value="Silver"
           />
           Silver
         </label>

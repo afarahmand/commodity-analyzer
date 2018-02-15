@@ -20,6 +20,10 @@ export const fetchStock = (dataset, stock) => {
   });
 };
 
-export const handleSelectedCommodity = radioButton => {
-  console.log(radioButton.value);
+export const handleClickedCommodity = e => {
+  console.log(e.target.value);
 };
+
+// (e) => {
+//   console.log(e.target.value);
+// });

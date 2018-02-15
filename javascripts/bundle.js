@@ -17263,6 +17263,12 @@ var _stock_util = __webpack_require__(175);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Create event listeners for radio buttons
+  var radioButtons = [];
+  for (var i = 0; i < 6; i++) {
+    document.getElementById('rb' + i).addEventListener("click", _stock_util.handleClickedCommodity);
+  }
+
   var canvas1 = document.getElementById("chart1");
   canvas1.setAttribute('width', '800');
   canvas1.setAttribute('height', '400');
@@ -30400,9 +30406,13 @@ var fetchStock = exports.fetchStock = function fetchStock(dataset, stock) {
   });
 };
 
-var handleSelectedCommodity = exports.handleSelectedCommodity = function handleSelectedCommodity(radioButton) {
-  console.log(radioButton.value);
+var handleClickedCommodity = exports.handleClickedCommodity = function handleClickedCommodity(e) {
+  console.log(e.target.value);
 };
+
+// (e) => {
+//   console.log(e.target.value);
+// });
 
 /***/ })
 /******/ ]);

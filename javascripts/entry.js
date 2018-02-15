@@ -1,8 +1,16 @@
 import Chart from 'chart.js';
 // import { handleSelectedCommodity } from './chart1';
-import { fetchStock, handleSelectedCommodity } from './stock_util';
+import { fetchStock, handleClickedCommodity } from './stock_util';
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Create event listeners for radio buttons
+  let radioButtons = [];
+  for(let i = 0; i < 6; i++) {
+    document
+    .getElementById(`rb${i}`)
+    .addEventListener("click", handleClickedCommodity);
+  }
+
   const canvas1 = document.getElementById("chart1");
   canvas1.setAttribute('width', '800');
   canvas1.setAttribute('height', '400');
