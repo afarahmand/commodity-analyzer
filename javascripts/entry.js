@@ -1,75 +1,38 @@
 import Chart from 'chart.js';
-// import { handleSelectedCommodity } from './chart1';
-import { fetchStock, handleClickedCommodity } from './stock_util';
+import {
+  changeDisplayedCommodity,
+  updateChart
+} from './stock_util';
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Create event listeners for radio buttons
-  let radioButtons = [];
-  for(let i = 0; i < 6; i++) {
-    document
-    .getElementById(`rb${i}`)
-    .addEventListener("click", handleClickedCommodity);
-  }
-
-  const canvas1 = document.getElementById("chart1");
-  canvas1.setAttribute('width', '800');
+  const canvas1 = document.getElementById("main-chart");
+  canvas1.setAttribute('width', '1000');
   canvas1.setAttribute('height', '400');
 
-  let data = [
-    { x: 100, y: 100 },
-    { x: 200, y: 300 },
-    { x: 300, y: 200 }
-  ];
-
-  const optionsChart1 = {
-    responsive: false,
-    title: {
-      display: true,
-      text: 'Stock Price'
-    }
-  };
-
-  // const chart = new Chart(canvas1, {
-  //     type: 'line',
-  //     data: {
-  //       labels: [],
-  //       datasets: [{
-  //         data: [],
-  //         label: "Price",
-  //         borderColor: "#3e95cd",
-  //         fill: false
-  //       }]
-  //     },
-  //     options: optionsChart1
-  // });
-
-  const chart = new Chart(canvas1, {
+  const chart1 = new Chart(canvas1, {
       type: 'line',
       data: {
-        labels: [data[0].x, data[1].x, data[2].x],
+        labels: [],
         datasets: [{
-          data: [data[0].y, data[1].y, data[2].y],
-          label: "Price",
+          data: [],
+          label: "Closing Price",
           borderColor: "#3e95cd",
           fill: false
         }]
       },
-      options: optionsChart1
+      options: {
+        responsive: false,
+        title: {
+          display: true,
+          text: 'Stock Price'
+        }
+      }
   });
 
-
-
-
-
-  let test;
-  fetchStock("CHRIS", "CME_GC1").then(
-    resp => {
-      test = resp;
-      console.log(resp);
-      console.log(resp.dataset_data.start_date);
-    },
-    err => {
-      console.log(err);
-    }
-  );
+  for(let i = 0; i < 7; i++) {
+    document.getElementById(`rb${i}`)
+    .addEventListener("click", e => {
+      changeDisplayedCommodity(chart1, e.target.value);
+    });
+  }
 });

@@ -17263,64 +17263,36 @@ var _stock_util = __webpack_require__(175);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Create event listeners for radio buttons
-  var radioButtons = [];
-  for (var i = 0; i < 6; i++) {
-    document.getElementById('rb' + i).addEventListener("click", _stock_util.handleClickedCommodity);
-  }
-
-  var canvas1 = document.getElementById("chart1");
-  canvas1.setAttribute('width', '800');
+  var canvas1 = document.getElementById("main-chart");
+  canvas1.setAttribute('width', '1000');
   canvas1.setAttribute('height', '400');
 
-  var data = [{ x: 100, y: 100 }, { x: 200, y: 300 }, { x: 300, y: 200 }];
-
-  var optionsChart1 = {
-    responsive: false,
-    title: {
-      display: true,
-      text: 'Stock Price'
-    }
-  };
-
-  // const chart = new Chart(canvas1, {
-  //     type: 'line',
-  //     data: {
-  //       labels: [],
-  //       datasets: [{
-  //         data: [],
-  //         label: "Price",
-  //         borderColor: "#3e95cd",
-  //         fill: false
-  //       }]
-  //     },
-  //     options: optionsChart1
-  // });
-
-  var chart = new _chart2.default(canvas1, {
+  var chart1 = new _chart2.default(canvas1, {
     type: 'line',
     data: {
-      labels: [data[0].x, data[1].x, data[2].x],
+      labels: [],
       datasets: [{
-        data: [data[0].y, data[1].y, data[2].y],
-        label: "Price",
+        data: [],
+        label: "Closing Price",
         borderColor: "#3e95cd",
         fill: false
       }]
     },
-    options: optionsChart1
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        text: 'Stock Price'
+      }
+    }
   });
 
-  var test = void 0;
-  (0, _stock_util.fetchStock)("CHRIS", "CME_GC1").then(function (resp) {
-    test = resp;
-    console.log(resp);
-    console.log(resp.dataset_data.start_date);
-  }, function (err) {
-    console.log(err);
-  });
+  for (var i = 0; i < 7; i++) {
+    document.getElementById('rb' + i).addEventListener("click", function (e) {
+      (0, _stock_util.changeDisplayedCommodity)(chart1, e.target.value);
+    });
+  }
 });
-// import { handleSelectedCommodity } from './chart1';
 
 /***/ }),
 /* 126 */
@@ -30384,35 +30356,73 @@ module.exports = function(Chart) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-// export const fetchStock = (dataset, stock) => (
-//   $.ajax({
-//     url: `https://www.quandl.com/api/v3/datasets/
-//     ${dataset}/
-//     ${stock}/
-//     data.json?
-//     api_key=hkJD88Y1dNFnFA5xjn3q&
-//     limit=5`,
-//     method: 'GET'
-//   })
-// );
+var clearChart = function clearChart(chart) {
+  while (chart.data.labels.length > 0) {
+    chart.data.labels.pop();
+    chart.data.datasets[0].data.pop();
+  }
+  chart.update();
+};
 
 var fetchStock = exports.fetchStock = function fetchStock(dataset, stock) {
   var root = "https://www.quandl.com/api/v3/datasets/";
   var APIKEY = "hkJD88Y1dNFnFA5xjn3q";
   return $.ajax({
-    url: "" + root + dataset + "/" + stock + "/data.json?api_key=" + APIKEY + "&limit=5&order=desc",
+    url: "" + root + dataset + "/" + stock + "/data.json?api_key=" + APIKEY + "&limit=1000",
     // url: `${root}WIKI/GE/data.json?api_key=${APIKEY}&limit=5&order=desc`,
     method: 'GET'
   });
 };
 
-var handleClickedCommodity = exports.handleClickedCommodity = function handleClickedCommodity(e) {
-  console.log(e.target.value);
+var changeDisplayedCommodity = exports.changeDisplayedCommodity = function changeDisplayedCommodity(chart, commodityName) {
+  var code = translateToQuandlCode(commodityName);
+  var dataset = "CHRIS";
+  var codePrefix = "CME_";
+
+  fetchStock(dataset, codePrefix.concat(code)).then(function (resp) {
+    var dates = [];
+    var prices = [];
+
+    // Filter out desired data (date and closing price)
+    resp.dataset_data.data.forEach(function (row) {
+      dates.push(row[0]);
+      prices.push(row[4]);
+    });
+    dates = dates.reverse();
+    updateChart(chart, dates, prices);
+  });
 };
 
-// (e) => {
-//   console.log(e.target.value);
-// });
+var translateToQuandlCode = exports.translateToQuandlCode = function translateToQuandlCode(commodity) {
+  switch (commodity) {
+    case "Copper":
+      return "HG1";
+    case "Crude Oil":
+      return "CL1";
+    case "Gold":
+      return "GC1";
+    case "Natural Gas":
+      return "NG1";
+    case "Palladium":
+      return "PA1";
+    case "Platinum":
+      return "PL1";
+    case "Silver":
+      return "SI1";
+  }
+};
+
+var updateChart = function updateChart(chart, newDates, newPrices) {
+  clearChart(chart);
+
+  var i = 0;
+  while (i < newDates.length) {
+    chart.data.labels.push(newDates[i]);
+    chart.data.datasets[0].data.push(newPrices[i]);
+    i++;
+  }
+  chart.update();
+};
 
 /***/ })
 /******/ ]);
