@@ -64,3 +64,13 @@ It is anticipated that there will be 4 scripts in addition to the webpack entry 
 * Implement an alerter service that allows a user to set a condition, and if that condition is met, notify the user via email.  The condition could initially include less than or greater than some value.
 
 * Add volume or additional stock indicators (RSI, etc.) to chart1
+
+
+
+
+<h2> Phase 2 - Additional features:</h2>
+* input via text box
+* allow both commodities + stocks
+* allow multiple stocks simultaneously + math ops
+* allow selection of daily, weekly, monthly info
+* show statistical info in a 2nd chart
