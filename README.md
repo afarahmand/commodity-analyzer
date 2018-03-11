@@ -1,4 +1,5 @@
 <h1>Stock Alerter</h1>
+<a href="https://afarahmand.github.io/stock-alerter/">Live App</a>
 
 <h2>Background and Overview</h2>
 Stock alerter is a tool using D3 to chart information related to stocks and commodities.
