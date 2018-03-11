@@ -15,6 +15,9 @@
 
 .byebug_history
 
+bundle.js
+bundle.js.map
+
 node_modules/
 .byebug_history
 .DS_Store
