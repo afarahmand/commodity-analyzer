@@ -2,6 +2,35 @@
 font-family: 'Poiret One', cursive;
 font-family: 'Audiowide', cursive; */
 
+/* rgba(155, 204, 109, 0.3) green */
+/* rgba(106,204,205) blue */
+/* rgba(253,104,105) red */
+
+body {
+  font-family: 'Audiowide', cursive;
+}
+
+canvas {
+  background-color: rgba(155, 204, 109, 0.3);
+}
+
+form#radio-buttons {
+  padding: 20px;
+  padding-top: 100px;
+  margin-right: 50px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+form#radio-buttons label {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: rgba(106,204,205, 0.6);
+}
+
 header {
   font-family: 'Audiowide', cursive;
   font-size: 3em;
@@ -9,19 +38,17 @@ header {
   justify-content: space-between;
   padding: 10px;
   border-bottom: 1px solid black;
+  background-color: rgba(253,104,105, 0.5);
 }
 
 header div {
 
 }
 
-body {
-}
-
-form#input-form {
+/* form#input-form {
   width: 90%;
   margin: 0 auto;
-}
+} */
 
 input[type="text"] {
   border: 1px solid black;
@@ -29,25 +56,19 @@ input[type="text"] {
   width: 100%;
 }
 
-main {
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-}
-
 input[type="radio"] {
   margin-right: 2px;
 }
 
-form#radio-buttons {
-  padding-top: 100px;
-  width: 100px;
+main {
+  margin: 0 auto;
+  margin-top: 30px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
 }
 
-form#radio-buttons label {
-  margin-top: 10px;
+section {
+  margin-top: 30px;
 }
 
 section canvas {
