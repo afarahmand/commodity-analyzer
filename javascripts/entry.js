@@ -6,14 +6,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas2 = document.getElementById("price-difference-chart");
   const canvas3 = document.getElementById("pmf-chart");
 
-  canvas1.setAttribute('width', '1000');
-  canvas1.setAttribute('height', '400');
+  const chartWidth = '1000';
+  const chartHeight = '600';
 
-  canvas2.setAttribute('width', '1000');
-  canvas2.setAttribute('height', '400');
+  canvas1.setAttribute('width', chartWidth);
+  canvas1.setAttribute('height', chartHeight);
 
-  canvas3.setAttribute('width', '1000');
-  canvas3.setAttribute('height', '400');
+  canvas2.setAttribute('width', chartWidth);
+  canvas2.setAttribute('height', chartHeight);
+
+  canvas3.setAttribute('width', chartWidth);
+  canvas3.setAttribute('height', chartHeight);
 
   const chartMain = new Chart(canvas1, {
       type: 'line',
@@ -43,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
         datasets: [{
           data: [],
           label: "Price per Standard Unit",
-          borderColor: "#3e95cd",
+          // borderColor: "#3e95cd",
+          borderColor: "red",
           fill: false
         }]
       },
@@ -64,7 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
         datasets: [{
           data: [],
           label: "Probability",
-          borderColor: "#3e95cd",
+          backgroundColor: "green",
+          // borderColor: "#3e95cd",
           fill: true
         }]
       },
@@ -72,14 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
         responsive: false,
         title: {
           display: true,
-          fontSize: 20,
+          fontSize: 32,
           text: 'Probability of Closing Price Being Within a Price Interval'
         },
         scales: {
           xAxes: [{
             ticks: {
               callback: function(tick, index, ticks) {
-                return (Math.round(100*parseFloat(tick))/100).toString();
+                return "< ".concat(
+                  (Math.round(100*parseFloat(tick))/100).toString()
+                );
               }// return string here for the tick.
             }
           }]
