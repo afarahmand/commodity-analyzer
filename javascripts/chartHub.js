@@ -36,7 +36,7 @@ export const changeDisplayedCommodity = (
         labelPMF,
         priceBuckets,
         bucketProbabilities
-      ] = getChartPMFParams(commodityName, diffClosePrices, 50);
+      ] = getChartPMFParams(commodityName, diffClosePrices, 10);
 
       updateChart(
         chartMain, titleChartMain, labelChartMain, dates, closePrices
