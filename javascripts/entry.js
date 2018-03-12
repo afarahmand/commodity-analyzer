@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartWidth = '1000';
   const chartHeight = '600';
 
-  canvas1.setAttribute('width', chartWidth);
+  canvas1.setAttribute('width', '900');
   canvas1.setAttribute('height', chartHeight);
 
   canvas2.setAttribute('width', chartWidth);
@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
         datasets: [{
           data: [],
           label: "Price per Standard Unit",
-          // borderColor: "#3e95cd",
           borderColor: "red",
           fill: false
         }]
@@ -69,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
           data: [],
           label: "Probability",
           backgroundColor: "green",
-          // borderColor: "#3e95cd",
           fill: true
         }]
       },
@@ -84,9 +82,21 @@ document.addEventListener("DOMContentLoaded", () => {
           xAxes: [{
             ticks: {
               callback: function(tick, index, ticks) {
-                return "< ".concat(
-                  (Math.round(100*parseFloat(tick))/100).toString()
-                );
+                const currTick = (
+                  Math.round(100*parseFloat(tick))/100
+                ).toString();
+
+                if (index === 0) {
+                  return "0 - ".concat(currTick);
+                } else {
+                  const prevTick = (
+                    Math.round(100*parseFloat(ticks[index-1]))/100
+                  ).toString();
+
+                  return prevTick
+                  .concat(" - ")
+                  .concat(currTick);
+                }
               }// return string here for the tick.
             }
           }]
