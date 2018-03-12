@@ -1,23 +1,7 @@
-export const getChartPMFParams = (commodityName, prices, segments) => {
-  const title = "Probability of Closing Price Being Within a Price Interval";
-  const label = "Probability [%]";
+const calculateOccurrencesPerBucket = (sortedPrices, min, max, step) => {
+  let occurrencesPerBucket = initOccurrencesPerBucket(min, max, step);
+  let bucketThreshold = min+step;
 
-  let sortedPrices = prices.slice(0).sort(function(a, b){return a - b;});
-
-  const min = sortedPrices[0];
-  const max = sortedPrices[sortedPrices.length-1];
-  const step = (max - min)/segments;
-
-  let occurrencesPerBucket = {};
-  let bucketThreshold = min;
-
-  // Init occurrencesPerThreshold with thresholds as keys and 0 values
-  while (bucketThreshold <= max) {
-    occurrencesPerBucket[bucketThreshold] = 0;
-    bucketThreshold+=step;
-  }
-
-  bucketThreshold = min;
   sortedPrices.forEach(price => {
     while (price > bucketThreshold) {
       bucketThreshold+=step;
@@ -30,21 +14,59 @@ export const getChartPMFParams = (commodityName, prices, segments) => {
     }
   });
 
+  return occurrencesPerBucket;
+};
+
+const convertOccurrencesToProbabilities = (
+  occurrencesPerBucket, numberOfSamples
+) => {
   let probabilitiesPerThreshold = {};
 
-  // Convert occurrences to probabilities
   for (let key in occurrencesPerBucket) {
     if (occurrencesPerBucket.hasOwnProperty(key)) {
       probabilitiesPerThreshold[key] =
-        100*occurrencesPerBucket[key]/sortedPrices.length;
+        100*occurrencesPerBucket[key]/numberOfSamples;
     }
   }
 
-  // const X = Object.keys(occurrencesPerThreshold);
-  // const Y = X.map(pB => (occurrencesPerThreshold[pB]));
+  return probabilitiesPerThreshold;
+};
 
-  const X = Object.keys(probabilitiesPerThreshold);
-  const Y = X.map(pB => (probabilitiesPerThreshold[pB]));
+export const getChartPMFParams = (commodityName, prices, segments) => {
+  const sortedPrices = prices.slice(0).sort(function(a, b){return a - b;});
+
+  const min = sortedPrices[0];
+  const max = sortedPrices[sortedPrices.length - 1];
+  const step = (max - min)/segments;
+
+  let occurrencesPerBucket = calculateOccurrencesPerBucket(
+    sortedPrices, min, max, step
+  );
+
+  let probabilitiesPerBucket = convertOccurrencesToProbabilities(
+    occurrencesPerBucket, sortedPrices.length
+  );
+
+  const title = "Probability of Closing Price Being Within a Price Interval";
+  const label = "Probability [%]";
+  // const X = Object.keys(occurrencesPerBucket);
+  // const Y = X.map(pB => (occurrencesPerBucket[pB]));
+
+  const X = Object.keys(probabilitiesPerBucket);
+  const Y = X.map(pB => (probabilitiesPerBucket[pB]));
 
   return [title, label, X, Y];
+};
+
+const initOccurrencesPerBucket = (min, max, step) => {
+  // Init occurrencesPerBucket with bucketThresholds as keys and 0 values
+  let occurrencesPerBucket = {};
+  let bucketThreshold = min+step;
+
+  while (bucketThreshold <= max) {
+    occurrencesPerBucket[bucketThreshold] = 0;
+    bucketThreshold+=step;
+  }
+
+  return occurrencesPerBucket;
 };
