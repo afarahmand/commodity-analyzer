@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas3.setAttribute('width', chartWidth);
   canvas3.setAttribute('height', chartHeight);
 
+  Chart.defaults.global.defaultFontFamily = 'Comfortaa';
+
   const chartMain = new Chart(canvas1, {
       type: 'line',
       data: {
