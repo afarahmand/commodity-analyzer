@@ -47,7 +47,7 @@ export const getChartPMFParams = (commodityName, prices, segments) => {
     occurrencesPerBucket, sortedPrices.length
   );
 
-  const title = "Probability of Closing Price Being Within a Price Interval";
+  const title = "Probability that the Difference in Next Day Closing Prices Being Within an Interval";
   const label = "Probability [%]";
   // const X = Object.keys(occurrencesPerBucket);
   // const Y = X.map(pB => (occurrencesPerBucket[pB]));

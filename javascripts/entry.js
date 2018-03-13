@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title: {
           display: true,
           fontSize: 32,
-          text: 'Percent Difference in Closing Price from Prior Day'
+          text: '% Difference in Closing Price from Prior Day'
         }
       }
   });
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title: {
           display: true,
           fontSize: 32,
-          text: 'Probability of Closing Price Being Within a Price Interval'
+          text: 'Probability of % Difference Between Consecutive Day Closing Prices'
         },
         scales: {
           xAxes: [{

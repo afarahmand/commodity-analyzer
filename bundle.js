@@ -17318,7 +17318,7 @@ document.addEventListener("DOMContentLoaded", function () {
       title: {
         display: true,
         fontSize: 32,
-        text: 'Commodity Price'
+        text: '% Difference in Closing Price from Prior Day'
       }
     }
   });
@@ -17339,7 +17339,7 @@ document.addEventListener("DOMContentLoaded", function () {
       title: {
         display: true,
         fontSize: 32,
-        text: 'Probability of Closing Price Being Within a Price Interval'
+        text: 'Probability of % Difference Between Consecutive Day Closing Prices'
       },
       scales: {
         xAxes: [{
@@ -30506,7 +30506,7 @@ var updateChart = function updateChart(chart, newTitle, newLabel, newX, newY) {
     i++;
   }
 
-  chart.options.title.text = newTitle;
+  // chart.options.title.text = newTitle;
   chart.data.datasets[0].label = newLabel;
   chart.update();
 };
@@ -30728,7 +30728,7 @@ var getChartPMFParams = exports.getChartPMFParams = function getChartPMFParams(c
 
   var probabilitiesPerBucket = convertOccurrencesToProbabilities(occurrencesPerBucket, sortedPrices.length);
 
-  var title = "Probability of Closing Price Being Within a Price Interval";
+  var title = "Probability that the Difference in Next Day Closing Prices Being Within an Interval";
   var label = "Probability [%]";
   // const X = Object.keys(occurrencesPerBucket);
   // const Y = X.map(pB => (occurrencesPerBucket[pB]));

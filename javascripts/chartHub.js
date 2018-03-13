@@ -79,7 +79,7 @@ const updateChart = (
     i++;
   }
 
-  chart.options.title.text = newTitle;
+  // chart.options.title.text = newTitle;
   chart.data.datasets[0].label = newLabel;
   chart.update();
 };
