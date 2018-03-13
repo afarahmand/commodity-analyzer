@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title: {
           display: true,
           fontSize: 32,
-          text: 'Commodity Price'
+          text: 'Percent Difference in Closing Price from Prior Day'
         }
       }
   });
