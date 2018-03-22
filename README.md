@@ -22,26 +22,26 @@ The app will include a single screen with the first and second charts together w
 The following technologies will be used for this project:
 <ul>  
   <li>Vanilla Javascript</li>
-  <li>D3 for charting information</li>
+  <li>chart.js for charting information</li>
   <li>Quandl API for accessing stock and commodity data</li>
   <li>Webpack for bundling</li>
 </ul>
 
 It is anticipated that there will be 4 scripts in addition to the webpack entry file:
 <ul>
-  <li>d3.js - the standard D3 library for charting</li>
+  <li>chart.js - the standard chart.js library for charting</li>
   <li>stock_util.js - a script for constructing one or more requests to the Quandl API based on a user selected stock, commodity, or combination thereof</li>
-  <li>chart1.js - a script for creating a D3 line chart based on the user selected input that displays either a chart of time vs. price or time vs. the result of the mathematical expression</li>
+  <li>chart1.js - a script for creating a line chart based on the user selected input that displays either a chart of time vs. price or time vs. the result of the mathematical expression</li>
 </ul>
 
 <h2>Implementation Timeline</h2>
 <h3>Weekend</h3>
 * project proposal
 
-* implement a basic D3 time-series chart from static data
+* implement a basic chart.js time-series chart from static data
 
 <h3>Day 1</h3>
-* Continue working on D3 chart
+* Continue working on chart
 
 * Make the chart look good: zooming, have ticks, have it scale appropriately (especially when zooming)
 
