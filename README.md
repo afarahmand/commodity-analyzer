@@ -2,7 +2,7 @@
 <a href="https://afarahmand.github.io/stock-alerter/">Live App</a>
 
 <h2>Background and Overview</h2>
-Stock alerter is a tool using D3 to chart information related to stocks and commodities.
+Stock alerter is a tool using chart.js to chart information related to stocks and commodities.
 
 Users input a stock, commodity, or a combination thereof expressed as a mathematical equation, and are shown historical information about their selection.  Since a stock has multiple values throughout a day, I anticipate using only one or more of the close price, minimum, or maximum price.
 
