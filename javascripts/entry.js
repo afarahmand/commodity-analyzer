@@ -1,5 +1,5 @@
 import Chart from 'chart.js';
-import { changeDisplayedCommodity } from './chartHub';
+import { changeDisplayedCommodities, roundToHundreths } from './chartHub';
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas1 = document.getElementById("main-chart");
@@ -21,95 +21,75 @@ document.addEventListener("DOMContentLoaded", () => {
   Chart.defaults.global.defaultFontFamily = 'Comfortaa';
 
   const chartMain = new Chart(canvas1, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          data: [],
-          label: "Price per Standard Unit",
-          borderColor: "#3e95cd",
-          fill: false
-        }]
-      },
-      options: {
-        responsive: false,
-        title: {
-          display: true,
-          fontSize: 32,
-          text: 'Commodity Price'
-        }
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Prices of Selected Commodities'
       }
+    }
   });
 
   const chartPriceDiff = new Chart(canvas2, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          data: [],
-          label: "Price per Standard Unit",
-          borderColor: "red",
-          fill: false
-        }]
-      },
-      options: {
-        responsive: false,
-        title: {
-          display: true,
-          fontSize: 32,
-          text: '% Difference in Closing Price from Prior Day'
-        }
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: '% Difference in Closing Price from Prior Day'
       }
+    }
   });
 
   const chartPMF = new Chart(canvas3, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [{
-          data: [],
-          label: "Probability",
-          backgroundColor: "green",
-          fill: true
-        }]
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Probability of % Difference'.concat(
+          ' Between Consecutive Day Closing Prices')
       },
-      options: {
-        responsive: false,
-        title: {
-          display: true,
-          fontSize: 32,
-          text: 'Probability of % Difference Between Consecutive Day Closing Prices'
-        },
-        scales: {
-          xAxes: [{
-            ticks: {
-              callback: function(tick, index, ticks) {
-                const currTick = (
-                  Math.round(100*parseFloat(tick))/100
-                ).toString();
+      scales: {
+        xAxes: [{
+          ticks: {
+            callback: function(tick, index, ticks) {
+              const currTick = roundToHundreths(tick).toString();
 
-                if (index === 0) {
-                  return "0 - ".concat(currTick);
-                } else {
-                  const prevTick = (
-                    Math.round(100*parseFloat(ticks[index-1]))/100
-                  ).toString();
-
-                  return prevTick
-                  .concat(" - ")
-                  .concat(currTick);
-                }
-              }// return string here for the tick.
-            }
-          }]
-        }
+              if (index === 0) {
+                return "0 - ".concat(currTick);
+              } else {
+                return roundToHundreths(ticks[index-1]).toString()
+                .concat(" - ")
+                .concat(currTick);
+              }
+            }// return string here for the tick.
+          }
+        }]
       }
-    });
+    }
+  });
 
   for(let i = 0; i < 7; i++) {
     document.getElementById(`rb${i}`)
     .addEventListener("click", e => {
-      changeDisplayedCommodity(
+      changeDisplayedCommodities(
         chartMain, chartPriceDiff, chartPMF, e.target.value
       );
     });

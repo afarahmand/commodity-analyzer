@@ -12,10 +12,12 @@ body {
 
 canvas {
   background-color: rgba(155, 204, 109, 0.3);
-  padding: 20px;
+  padding: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
 }
 
-form#radio-buttons {
+form#commodity-chooser {
   padding: 20px;
   padding-top: 100px;
   margin-right: 20px;
@@ -24,7 +26,7 @@ form#radio-buttons {
   flex-direction: column;
 }
 
-form#radio-buttons label {
+form#commodity-chooser label {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 15px;
@@ -64,7 +66,7 @@ main {
 }
 
 section {
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 section canvas {

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 125);
+/******/ 	return __webpack_require__(__webpack_require__.s = 126);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1896,7 +1896,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(157)("./" + name);
+            __webpack_require__(158)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4531,7 +4531,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(156)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(157)(module)))
 
 /***/ }),
 /* 1 */
@@ -4541,9 +4541,9 @@ return hooks;
 
 
 module.exports = __webpack_require__(6);
-module.exports.easing = __webpack_require__(128);
-module.exports.canvas = __webpack_require__(129);
-module.exports.options = __webpack_require__(130);
+module.exports.easing = __webpack_require__(129);
+module.exports.canvas = __webpack_require__(130);
+module.exports.options = __webpack_require__(131);
 
 
 /***/ }),
@@ -4695,10 +4695,10 @@ module.exports = Element;
 
 
 module.exports = {};
-module.exports.Arc = __webpack_require__(136);
-module.exports.Line = __webpack_require__(137);
-module.exports.Point = __webpack_require__(138);
-module.exports.Rectangle = __webpack_require__(139);
+module.exports.Arc = __webpack_require__(137);
+module.exports.Line = __webpack_require__(138);
+module.exports.Point = __webpack_require__(139);
+module.exports.Rectangle = __webpack_require__(140);
 
 
 /***/ }),
@@ -5263,8 +5263,8 @@ helpers.getValueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var convert = __webpack_require__(132);
-var string = __webpack_require__(134);
+var convert = __webpack_require__(133);
+var string = __webpack_require__(135);
 
 var Color = function (obj) {
 	if (obj instanceof Color) {
@@ -6094,8 +6094,8 @@ module.exports = {
 
 
 var helpers = __webpack_require__(1);
-var basic = __webpack_require__(140);
-var dom = __webpack_require__(141);
+var basic = __webpack_require__(141);
+var dom = __webpack_require__(142);
 
 // @TODO Make possible to select another platform at build time.
 var implementation = dom._enabled ? dom : basic;
@@ -17254,11 +17254,334 @@ return zhTw;
 "use strict";
 
 
-var _chart = __webpack_require__(126);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.roundToHundreths = exports.changeDisplayedCommodities = undefined;
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _stock_api_util = __webpack_require__(176);
+
+var _chartMain = __webpack_require__(177);
+
+var _chartPriceDiff = __webpack_require__(178);
+
+var _chartPMF = __webpack_require__(179);
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var addCommodity = function addCommodity(chartMain, chartPriceDiff, chartPMF, commodityName) {
+  (0, _stock_api_util.fetchStock)((0, _stock_api_util.translateToQuandlCode)(commodityName)).then(function (apiResponse) {
+    // (1) Grab new data via API
+    // (2) Create new date arr with dates that all datasets have data
+    //   in this step, only new data is reconciled
+    // (3) Reconcile already charted data (not necessary)
+
+    var _filterAndReconcile = filterAndReconcile(chartMain.data.labels, chartMain.data.datasets, apiResponse),
+        _filterAndReconcile2 = _slicedToArray(_filterAndReconcile, 2),
+        dates = _filterAndReconcile2[0],
+        percentPricesFromInitPrice = _filterAndReconcile2[1];
+
+    // const percentPricesFromInitPrice =
+    //   getChartMainParams(commodityName, closePrices);
+
+    var diffClosePrices = (0, _chartPriceDiff.getChartPriceDiffParams)(commodityName, percentPricesFromInitPrice);
+
+    var _getChartPMFParams = (0, _chartPMF.getChartPMFParams)(commodityName, diffClosePrices, 40),
+        _getChartPMFParams2 = _slicedToArray(_getChartPMFParams, 2),
+        priceBuckets = _getChartPMFParams2[0],
+        bucketProbabilities = _getChartPMFParams2[1];
+
+    updateChart(chartMain, dates, percentPricesFromInitPrice, commodityName);
+
+    updateChart(chartPriceDiff, dates, diffClosePrices, commodityName);
+
+    updateChart(chartPMF, priceBuckets, bucketProbabilities, commodityName);
+  });
+};
+
+// const chartMain = new Chart(canvas1, {
+//   type: 'line',
+//   data: {
+//     labels: [],
+//     datasets: [
+//       {
+//         data: [],
+//         label: "Copper",
+//         borderColor: "orange",
+//         fill: false
+//       },
+//       {}
+//     ]
+//   },
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var removeCommodity = function removeCommodity(chartMain, chartPriceDiff, chartPMF, commodityName) {
+  removeDataset(chartMain, commodityName);
+  removeDataset(chartPriceDiff, commodityName);
+  removeDataset(chartPMF, commodityName);
+  // let newDatasetsArr = [];
+  //
+  // chartMain.data.datasets.forEach(dataset => {
+  //   if (dataset.label !== commodityName) {
+  //     newDatasetsArr.push(dataset);
+  //   }
+  // });
+  //
+  // let i = chartMain.data.datasets.length;
+  // let len = i;
+  //
+  // while (i > 0) {
+  //   chartMain.data.datasets.pop();
+  //   i--;
+  // }
+  //
+  // newDatasetsArr.forEach(dataset => {
+  //   chartMain.data.datasets.push(dataset);
+  // });
+  //
+  // chartMain.update();
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var removeDataset = function removeDataset(chart, commodityName) {
+  var newDatasetsArr = [];
+
+  chart.data.datasets.forEach(function (dataset) {
+    if (dataset.label !== commodityName) {
+      newDatasetsArr.push(dataset);
+    }
+  });
+
+  var i = chart.data.datasets.length;
+  var len = i;
+
+  while (i > 0) {
+    chart.data.datasets.pop();
+    i--;
+  }
+
+  newDatasetsArr.forEach(function (dataset) {
+    chart.data.datasets.push(dataset);
+  });
+
+  chart.update();
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var changeDisplayedCommodities = exports.changeDisplayedCommodities = function changeDisplayedCommodities(chartMain, chartPriceDiff, chartPMF, commodityName) {
+  if (chartIncludesCommodity(chartMain, commodityName)) {
+    removeCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
+  } else {
+    addCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
+  }
+
+  // fetchStock(translateToQuandlCode(commodityName)).then(
+  //   apiResponse => {
+  //
+  //     const [
+  //       dates,
+  //       closePrices
+  //     ] = filterApiResponse(apiResponse);
+  //
+  //     const [
+  //       titleChartMain,
+  //       labelChartMain,
+  //       percentPricesFromInitPrice
+  //     ] = getChartMainParams(commodityName, closePrices);
+  //
+  //     const [
+  //       titleChartPriceDiff,
+  //       labelChartPriceDiff,
+  //       diffClosePrices
+  //     ] = getChartPriceDiffParams(commodityName, closePrices);
+  //
+  //     const [
+  //       titlePMF,
+  //       labelPMF,
+  //       priceBuckets,
+  //       bucketProbabilities
+  //     ] = getChartPMFParams(commodityName, diffClosePrices, 40);
+  //
+  //     updateChart(
+  //       chartMain,
+  //       titleChartMain,
+  //       labelChartMain,
+  //       dates,
+  //       percentPricesFromInitPrice
+  //     );
+  //
+  //     updateChart(
+  //       chartPriceDiff,
+  //       titleChartPriceDiff,
+  //       labelChartPriceDiff,
+  //       dates,
+  //       diffClosePrices
+  //     );
+  //
+  //     updateChart(
+  //       chartPMF, titlePMF, labelPMF, priceBuckets, bucketProbabilities
+  //     );
+  //   }
+  // );
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var chartIncludesCommodity = function chartIncludesCommodity(chart, commodityName) {
+  var i = 0;
+  while (i < chart.data.datasets.length) {
+    if (chart.data.datasets[i].label === commodityName) {
+      return true;
+    }
+    i++;
+  }
+
+  return false;
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var clearChart = function clearChart(chart) {
+  while (chart.data.labels.length > 0) {
+    chart.data.labels.pop();
+
+    chart.data.datasets.forEach(function (dataset) {
+      dataset.data.pop();
+    });
+  }
+  chart.update();
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Filters API response to remove bad data then
+//   further limits data to those dates for which all datasets (already
+//   charted and new) have good data
+var filterAndReconcile = function filterAndReconcile(alreadyChartedDates, alreadyChartedDatasets, apiResponse) {
+  var _filterApiResponse = filterApiResponse(apiResponse),
+      _filterApiResponse2 = _slicedToArray(_filterApiResponse, 2),
+      newDates = _filterApiResponse2[0],
+      newClosePrices = _filterApiResponse2[1];
+
+  var _reconcile = reconcile(newDates, newClosePrices, alreadyChartedDates, alreadyChartedDatasets),
+      _reconcile2 = _slicedToArray(_reconcile, 2),
+      reconciledDates = _reconcile2[0],
+      reconciledClosePrices = _reconcile2[1];
+
+  return [reconciledDates, reconciledClosePrices];
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Filter out bad data received from server
+var filterApiResponse = function filterApiResponse(apiResponse) {
+  var dates = [];
+  var closePrices = [];
+
+  apiResponse.dataset_data.data.forEach(function (row) {
+    if (row[1] !== null) {
+      dates.unshift(row[0]);
+      closePrices.unshift(row[1]);
+    }
+  });
+
+  return [dates, closePrices];
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var getColor = function getColor(commodityName) {
+  switch (commodityName) {
+    case "Copper":
+      return "orange";
+    case "Crude Oil":
+      return "black";
+    case "Gold":
+      return "gold";
+    case "Natural Gas":
+      return "red";
+    case "Palladium":
+      return "green";
+    case "Platinum":
+      return "blue";
+    case "Silver":
+      return "grey";
+  }
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var reconcile = function reconcile(newDates, newClosePrices, alreadyChartedDates, alreadyChartedDatasets) {
+  if (alreadyChartedDates.length === 0) {
+    return [newDates, (0, _chartMain.convertToPercentPrices)([newClosePrices])];
+  }
+
+  var reconciledDates = [];
+  var reconciledClosePrices = new Array(alreadyChartedDatasets.length + 1);
+
+  var newPercPrices = (0, _chartMain.convertToPercentPrices)([newClosePrices]).pop();
+
+  // Init
+  var i = 0;
+  while (i <= alreadyChartedDatasets.length) {
+    reconciledClosePrices[i] = [];
+    i += 1;
+  }
+
+  alreadyChartedDates.forEach(function (alreadyChartedDate, idx) {
+    if (newDates.includes(alreadyChartedDate)) {
+      reconciledDates.push(alreadyChartedDate);
+
+      i = 0;
+      while (i < alreadyChartedDatasets.length) {
+        reconciledClosePrices[i].push(alreadyChartedDatasets[i].data[idx]);
+        i += 1;
+      }
+      reconciledClosePrices[i].push(newPercPrices[idx]);
+    }
+  });
+
+  // Return date arr and arr of arr for price datasets
+  return [reconciledDates, reconciledClosePrices];
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var roundToHundreths = exports.roundToHundreths = function roundToHundreths(num) {
+  return Math.round(100 * parseFloat(num)) / 100;
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var updateChart = function updateChart(chart, dates, closePricesAllDatasets, commodityName) {
+  clearChart(chart);
+
+  // Init empty dataset objects within the chart
+  chart.data.datasets.push({
+    data: [],
+    label: commodityName,
+    borderColor: getColor(commodityName),
+    fill: false
+  });
+
+  var i = 0;
+  while (i < dates.length) {
+    chart.data.labels.push(dates[i]);
+
+    closePricesAllDatasets.forEach(function (closePricesOneDataset, datasetIndex) {
+      chart.data.datasets[datasetIndex].data.push(closePricesOneDataset[i]);
+    });
+    i++;
+  }
+
+  chart.update();
+};
+
+/***/ }),
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _chart = __webpack_require__(127);
 
 var _chart2 = _interopRequireDefault(_chart);
 
-var _chartHub = __webpack_require__(175);
+var _chartHub = __webpack_require__(125);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17285,19 +17608,14 @@ document.addEventListener("DOMContentLoaded", function () {
     type: 'line',
     data: {
       labels: [],
-      datasets: [{
-        data: [],
-        label: "Price per Standard Unit",
-        borderColor: "#3e95cd",
-        fill: false
-      }]
+      datasets: []
     },
     options: {
       responsive: false,
       title: {
         display: true,
         fontSize: 32,
-        text: 'Commodity Price'
+        text: 'Prices of Selected Commodities'
       }
     }
   });
@@ -17306,12 +17624,7 @@ document.addEventListener("DOMContentLoaded", function () {
     type: 'line',
     data: {
       labels: [],
-      datasets: [{
-        data: [],
-        label: "Price per Standard Unit",
-        borderColor: "red",
-        fill: false
-      }]
+      datasets: []
     },
     options: {
       responsive: false,
@@ -17324,35 +17637,28 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   var chartPMF = new _chart2.default(canvas3, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: [],
-      datasets: [{
-        data: [],
-        label: "Probability",
-        backgroundColor: "green",
-        fill: true
-      }]
+      datasets: []
     },
     options: {
       responsive: false,
       title: {
         display: true,
         fontSize: 32,
-        text: 'Probability of % Difference Between Consecutive Day Closing Prices'
+        text: 'Probability of % Difference'.concat(' Between Consecutive Day Closing Prices')
       },
       scales: {
         xAxes: [{
           ticks: {
             callback: function callback(tick, index, ticks) {
-              var currTick = (Math.round(100 * parseFloat(tick)) / 100).toString();
+              var currTick = (0, _chartHub.roundToHundreths)(tick).toString();
 
               if (index === 0) {
                 return "0 - ".concat(currTick);
               } else {
-                var prevTick = (Math.round(100 * parseFloat(ticks[index - 1])) / 100).toString();
-
-                return prevTick.concat(" - ").concat(currTick);
+                return (0, _chartHub.roundToHundreths)(ticks[index - 1]).toString().concat(" - ").concat(currTick);
               }
             } // return string here for the tick.
           }
@@ -17363,7 +17669,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   for (var i = 0; i < 7; i++) {
     document.getElementById('rb' + i).addEventListener("click", function (e) {
-      (0, _chartHub.changeDisplayedCommodity)(chartMain, chartPriceDiff, chartPMF, e.target.value);
+      (0, _chartHub.changeDisplayedCommodities)(chartMain, chartPriceDiff, chartPMF, e.target.value);
     });
   }
 
@@ -17374,18 +17680,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * @namespace Chart
  */
-var Chart = __webpack_require__(127)();
+var Chart = __webpack_require__(128)();
 
 Chart.helpers = __webpack_require__(1);
 
 // @todo dispatch these helpers into appropriated helpers/helpers.* file and write unit tests!
-__webpack_require__(131)(Chart);
+__webpack_require__(132)(Chart);
 
 Chart.defaults = __webpack_require__(2);
 Chart.Element = __webpack_require__(3);
@@ -17393,7 +17699,6 @@ Chart.elements = __webpack_require__(4);
 Chart.Interaction = __webpack_require__(8);
 Chart.platform = __webpack_require__(9);
 
-__webpack_require__(142)(Chart);
 __webpack_require__(143)(Chart);
 __webpack_require__(144)(Chart);
 __webpack_require__(145)(Chart);
@@ -17401,39 +17706,40 @@ __webpack_require__(146)(Chart);
 __webpack_require__(147)(Chart);
 __webpack_require__(148)(Chart);
 __webpack_require__(149)(Chart);
-
 __webpack_require__(150)(Chart);
+
 __webpack_require__(151)(Chart);
 __webpack_require__(152)(Chart);
 __webpack_require__(153)(Chart);
 __webpack_require__(154)(Chart);
 __webpack_require__(155)(Chart);
+__webpack_require__(156)(Chart);
 
 // Controllers must be loaded after elements
 // See Chart.core.datasetController.dataElementType
-__webpack_require__(158)(Chart);
 __webpack_require__(159)(Chart);
 __webpack_require__(160)(Chart);
 __webpack_require__(161)(Chart);
 __webpack_require__(162)(Chart);
 __webpack_require__(163)(Chart);
 __webpack_require__(164)(Chart);
-
 __webpack_require__(165)(Chart);
+
 __webpack_require__(166)(Chart);
 __webpack_require__(167)(Chart);
 __webpack_require__(168)(Chart);
 __webpack_require__(169)(Chart);
 __webpack_require__(170)(Chart);
 __webpack_require__(171)(Chart);
+__webpack_require__(172)(Chart);
 
 // Loading built-it plugins
 var plugins = [];
 
 plugins.push(
-	__webpack_require__(172)(Chart),
 	__webpack_require__(173)(Chart),
-	__webpack_require__(174)(Chart)
+	__webpack_require__(174)(Chart),
+	__webpack_require__(175)(Chart)
 );
 
 Chart.plugins.register(plugins);
@@ -17458,7 +17764,7 @@ Chart.canvasHelpers = Chart.helpers.canvas;
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17514,7 +17820,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17771,7 +18077,7 @@ helpers.easingEffects = effects;
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17992,7 +18298,7 @@ helpers.drawRoundedRectangle = function(ctx) {
 
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18095,7 +18401,7 @@ module.exports = {
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18705,10 +19011,10 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var conversions = __webpack_require__(133);
+var conversions = __webpack_require__(134);
 
 var convert = function() {
    return new Converter();
@@ -18802,7 +19108,7 @@ Converter.prototype.getValues = function(space) {
 module.exports = convert;
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports) {
 
 /* MIT license */
@@ -19506,11 +19812,11 @@ for (var key in cssKeywords) {
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var colorNames = __webpack_require__(135);
+var colorNames = __webpack_require__(136);
 
 module.exports = {
    getRgba: getRgba,
@@ -19733,7 +20039,7 @@ for (var name in colorNames) {
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19892,7 +20198,7 @@ module.exports = {
 
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20006,7 +20312,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20104,7 +20410,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20217,7 +20523,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20441,7 +20747,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, exports) {
 
 /**
@@ -20462,7 +20768,7 @@ module.exports = {
 
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20926,7 +21232,7 @@ helpers.removeEvent = removeEventListener;
 
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21328,7 +21634,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21507,7 +21813,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22418,7 +22724,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22755,7 +23061,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23184,7 +23490,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23236,7 +23542,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24174,7 +24480,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25129,7 +25435,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25268,7 +25574,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25408,7 +25714,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25607,7 +25913,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25858,7 +26164,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26395,7 +26701,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27158,7 +27464,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -27186,7 +27492,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -27435,10 +27741,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 157;
+webpackContext.id = 158;
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27866,7 +28172,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28053,7 +28359,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28359,7 +28665,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28699,7 +29005,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28928,7 +29234,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29103,7 +29409,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29152,7 +29458,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29170,7 +29476,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29187,7 +29493,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29205,7 +29511,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29223,7 +29529,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29241,7 +29547,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29259,7 +29565,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29274,7 +29580,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29602,7 +29908,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30176,7 +30482,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30426,92 +30732,6 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.changeDisplayedCommodity = undefined;
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _stock_api_util = __webpack_require__(176);
-
-var _chartMain = __webpack_require__(177);
-
-var _chartPriceDiff = __webpack_require__(178);
-
-var _chartPMF = __webpack_require__(179);
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var changeDisplayedCommodity = exports.changeDisplayedCommodity = function changeDisplayedCommodity(chartMain, chartPriceDiff, chartPMF, commodityName) {
-  (0, _stock_api_util.fetchStock)((0, _stock_api_util.translateToQuandlCode)(commodityName)).then(function (apiResponse) {
-    var _getChartMainParams = (0, _chartMain.getChartMainParams)(commodityName, apiResponse),
-        _getChartMainParams2 = _slicedToArray(_getChartMainParams, 4),
-        titleChartMain = _getChartMainParams2[0],
-        labelChartMain = _getChartMainParams2[1],
-        dates = _getChartMainParams2[2],
-        closePrices = _getChartMainParams2[3];
-
-    var _getChartPriceDiffPar = (0, _chartPriceDiff.getChartPriceDiffParams)(commodityName, closePrices),
-        _getChartPriceDiffPar2 = _slicedToArray(_getChartPriceDiffPar, 3),
-        titleChartPriceDiff = _getChartPriceDiffPar2[0],
-        labelChartPriceDiff = _getChartPriceDiffPar2[1],
-        diffClosePrices = _getChartPriceDiffPar2[2];
-
-    // pmfChart
-    // const [
-    //   titlePMF,
-    //   labelPMF,
-    //   priceBuckets,
-    //   bucketProbabilities
-    // ] = getChartPMFParams(commodityName, closePrices, 100);
-
-    var _getChartPMFParams = (0, _chartPMF.getChartPMFParams)(commodityName, diffClosePrices, 10),
-        _getChartPMFParams2 = _slicedToArray(_getChartPMFParams, 4),
-        titlePMF = _getChartPMFParams2[0],
-        labelPMF = _getChartPMFParams2[1],
-        priceBuckets = _getChartPMFParams2[2],
-        bucketProbabilities = _getChartPMFParams2[3];
-
-    updateChart(chartMain, titleChartMain, labelChartMain, dates, closePrices);
-
-    updateChart(chartPriceDiff, titleChartPriceDiff, labelChartPriceDiff, dates, diffClosePrices);
-
-    updateChart(chartPMF, titlePMF, labelPMF, priceBuckets, bucketProbabilities);
-  });
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var clearChart = function clearChart(chart) {
-  while (chart.data.labels.length > 0) {
-    chart.data.labels.pop();
-    chart.data.datasets[0].data.pop();
-  }
-  chart.update();
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var updateChart = function updateChart(chart, newTitle, newLabel, newX, newY) {
-  clearChart(chart);
-
-  var i = 0;
-  while (i < newX.length) {
-    chart.data.labels.push(newX[i]);
-    chart.data.datasets[0].data.push(newY[i]);
-    i++;
-  }
-
-  // chart.options.title.text = newTitle;
-  chart.data.datasets[0].label = newLabel;
-  chart.update();
-};
-
-/***/ }),
 /* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30525,7 +30745,7 @@ var fetchStock = exports.fetchStock = function fetchStock(quandlCode) {
   var APIKEY = "hkJD88Y1dNFnFA5xjn3q";
 
   return $.ajax({
-    url: "https://www.quandl.com/api/v3/datasets/".concat(quandlCode + "/data.json?").concat("api_key=" + APIKEY + "&").concat("limit=1000"),
+    url: 'https://www.quandl.com/api/v3/datasets/'.concat(quandlCode + '/data.json?').concat('api_key=' + APIKEY + '&').concat('column_index=4&').concat('limit=1000'),
     method: 'GET'
   });
 };
@@ -30582,37 +30802,40 @@ var translateToQuandlCode = exports.translateToQuandlCode = function translateTo
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getChartMainParams = exports.convertToPercentPrices = undefined;
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _chartHub = __webpack_require__(125);
 
-var filterColumns = function filterColumns(apiResponse) {
-  var dates = [];
-  var closePrices = [];
-
-  apiResponse.dataset_data.data.forEach(function (row) {
-    if (row[4] !== null) {
-      dates.unshift(row[0]);
-      closePrices.unshift(row[4]);
-    }
-    // else if (lastNonNullPrice) {
-    //   dates.unshift(row[0]);
-    //   closePrices.unshift(lastNonNullPrice);
-    // }
+var convertToPercentPrices = exports.convertToPercentPrices = function convertToPercentPrices(inputPrices) {
+  var initPrices = new Array(inputPrices.length); // First price of each dataset
+  inputPrices.forEach(function (inputPrice, idx) {
+    initPrices[idx] = inputPrice[0];
   });
 
-  return [dates, closePrices];
+  var percentPrices = new Array(inputPrices.length);
+
+  var i = 0;
+  while (i < inputPrices.length) {
+    percentPrices[i] = [];
+    inputPrices[i].forEach(function (inputPrice) {
+      percentPrices[i].push((0, _chartHub.roundToHundreths)(100 * (inputPrice - initPrices[i]) / initPrices[i]));
+    });
+    i += 1;
+  }
+
+  return percentPrices;
 };
 
-var getChartMainParams = exports.getChartMainParams = function getChartMainParams(commodityName, apiResponse) {
-  var title = "Price of ".concat(commodityName).concat(" Front-Month Futures Contract");
-  var label = getLabel(commodityName);
+var getChartMainParams = exports.getChartMainParams = function getChartMainParams(commodityName, closePrices) {
+  // const title = "Price of "
+  //   .concat(commodityName)
+  //   .concat(" Front-Month Futures Contract");
+  // const label = getLabel(commodityName);
+  var percentPricesFromInitPrice = convertToPercentPrices(closePrices);
 
-  var _filterColumns = filterColumns(apiResponse),
-      _filterColumns2 = _slicedToArray(_filterColumns, 2),
-      dates = _filterColumns2[0],
-      closePrices = _filterColumns2[1];
-
-  return [title, label, dates, closePrices];
+  // return [title, label, dates, closePrices];
+  // return [title, label, percentPricesFromInitPrice];
+  return percentPricesFromInitPrice;
 };
 
 var getLabel = function getLabel(commodityName) {
@@ -30641,26 +30864,54 @@ var getLabel = function getLabel(commodityName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var getChartPriceDiffParams = exports.getChartPriceDiffParams = function getChartPriceDiffParams(commodityName, closePrices) {
-  var title = "Percent Difference In Closing Price from Prior Day";
-  var label = "Price Difference [%]";
+var getChartPriceDiffParams = exports.getChartPriceDiffParams = function getChartPriceDiffParams(commodityName, percentPricesFromInitPrice) {
+  // const title = "Percent Difference In Closing Price from Prior Day";
+  // const label = "Price Difference [%]";
   // const diffClosePrices = getDiffClosePrices(closePrices);
-  var diffClosePrices = getDiffClosePricePercentages(closePrices);
+  var closePrices = new Array(percentPricesFromInitPrice.length);
 
-  return [title, label, diffClosePrices];
-};
+  var i = 0;
+  while (i < closePrices.length) {
+    closePrices[i] = [];
+    i++;
+  }
 
-var getDiffClosePrices = function getDiffClosePrices(closePrices) {
-  var diffClosePrices = [];
-
-  closePrices.forEach(function (closePrice, index) {
-    diffClosePrices.push(Math.abs(closePrices[index + 1] - closePrice));
+  percentPricesFromInitPrice.forEach(function (percentPrice, idx) {
+    i = 0;
+    while (i < percentPrice.length) {
+      closePrices[idx][i] = percentPrice[i] + 100;
+      i++;
+    }
   });
 
-  diffClosePrices.pop();
+  // const diffClosePrices = getDiffClosePricePercentages(closePrices);
 
+  var diffClosePrices = new Array(percentPricesFromInitPrice.length);
+
+  i = 0;
+  while (i < closePrices.length) {
+    diffClosePrices[i] = [];
+    diffClosePrices[i] = getDiffClosePricePercentages(closePrices[i]);
+    i++;
+  }
+
+  // return [title, label, diffClosePrices];
   return diffClosePrices;
 };
+
+// const getDiffClosePrices = closePrices => {
+//   let diffClosePrices = [];
+//
+//   closePrices.forEach((closePrice, index) => {
+//     diffClosePrices.push(
+//       Math.abs(closePrices[index + 1] - closePrice)
+//     );
+//   });
+//
+//   diffClosePrices.pop();
+//
+//   return diffClosePrices;
+// };
 
 var getDiffClosePricePercentages = function getDiffClosePricePercentages(closePrices) {
   var diffClosePricePercentages = [];
@@ -30684,13 +30935,20 @@ var getDiffClosePricePercentages = function getDiffClosePricePercentages(closePr
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var calculateOccurrencesPerBucket = function calculateOccurrencesPerBucket(sortedPrices, min, max, step) {
-  var occurrencesPerBucket = initOccurrencesPerBucket(min, max, step);
-  var bucketThreshold = min + step;
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var calculateOccurrencesPerBucket = function calculateOccurrencesPerBucket(sortedPrices) {
+  // const calculateOccurrencesPerBucket = (sortedPrices, min, max, step) => {
+  // let occurrencesPerBucket = initOccurrencesPerBucket(min, max, step);
+  var buckets = [0.4, 0.8, 1.2, 1.6, 2.0, 2.5, 3.0, 5.0, 7.0, 20.0];
+
+  var occurrencesPerBucket = initOccurrencesPerBucket();
+  var bucketThreshold = buckets[0];
+  var bucketIndex = 0;
 
   sortedPrices.forEach(function (price) {
     while (price > bucketThreshold) {
-      bucketThreshold += step;
+      bucketIndex++;
+      bucketThreshold = buckets[bucketIndex];
     }
 
     if (occurrencesPerBucket[bucketThreshold] === undefined) {
@@ -30703,6 +30961,7 @@ var calculateOccurrencesPerBucket = function calculateOccurrencesPerBucket(sorte
   return occurrencesPerBucket;
 };
 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 var convertOccurrencesToProbabilities = function convertOccurrencesToProbabilities(occurrencesPerBucket, numberOfSamples) {
   var probabilitiesPerThreshold = {};
 
@@ -30715,41 +30974,87 @@ var convertOccurrencesToProbabilities = function convertOccurrencesToProbabiliti
   return probabilitiesPerThreshold;
 };
 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 var getChartPMFParams = exports.getChartPMFParams = function getChartPMFParams(commodityName, prices, segments) {
-  var sortedPrices = prices.slice(0).sort(function (a, b) {
-    return a - b;
+  var sortedPricesManyDatasets = new Array(prices.length);
+  var occurrencesPerBucket = new Array(prices.length);
+  var probabilitiesPerBucket = new Array(prices.length);
+
+  var i = 0;
+  while (i < sortedPricesManyDatasets.length) {
+    sortedPricesManyDatasets[i] = [];
+    occurrencesPerBucket[i] = [];
+    probabilitiesPerBucket[i] = [];
+
+    sortedPricesManyDatasets[i] = prices[i].slice(0).sort(function (a, b) {
+      return a - b;
+    });
+    i++;
+  }
+
+  // sortedPrices = prices.slice(0).sort(function(a, b){return a - b;});
+  var min = void 0,
+      max = void 0,
+      step = void 0;
+
+  sortedPricesManyDatasets.forEach(function (sortedPrices, datasetIndex) {
+    min = sortedPrices[0];
+    max = sortedPrices[sortedPrices.length - 1];
+    step = (max - min) / segments;
+
+    occurrencesPerBucket[datasetIndex] = calculateOccurrencesPerBucket(sortedPrices, min, max, step);
+
+    probabilitiesPerBucket[datasetIndex] = convertOccurrencesToProbabilities(occurrencesPerBucket[datasetIndex], sortedPrices.length);
   });
 
-  var min = sortedPrices[0];
-  var max = sortedPrices[sortedPrices.length - 1];
-  var step = (max - min) / segments;
+  // const title = "Probability of the Difference
+  // in Next Day Closing Prices Being Within an Interval";
+  // const label = "Probability [%]";
 
-  var occurrencesPerBucket = calculateOccurrencesPerBucket(sortedPrices, min, max, step);
-
-  var probabilitiesPerBucket = convertOccurrencesToProbabilities(occurrencesPerBucket, sortedPrices.length);
-
-  var title = "Probability that the Difference in Next Day Closing Prices Being Within an Interval";
-  var label = "Probability [%]";
   // const X = Object.keys(occurrencesPerBucket);
   // const Y = X.map(pB => (occurrencesPerBucket[pB]));
 
-  var X = Object.keys(probabilitiesPerBucket);
-  var Y = X.map(function (pB) {
-    return probabilitiesPerBucket[pB];
-  });
+  // const X = Object.keys(probabilitiesPerBucket);
+  var X = [0.4, 0.8, 1.2, 1.6, 2.0, 2.5, 3.0, 5.0, 7.0, 20.0];
+  var Y = new Array(prices.length);
 
-  return [title, label, X, Y];
+  i = 0;
+  while (i < prices.length) {
+    Y[i] = X.map(function (pB) {
+      return probabilitiesPerBucket[i][pB];
+    });
+    i++;
+  }
+
+  // return [title, label, X, Y];
+  return [X, Y];
 };
 
-var initOccurrencesPerBucket = function initOccurrencesPerBucket(min, max, step) {
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// const initOccurrencesPerBucket = (min, max, step) => {
+//   // Init occurrencesPerBucket with bucketThresholds as keys and 0 values
+//   let occurrencesPerBucket = {};
+//   let bucketThreshold = min+step;
+//
+//   while (bucketThreshold <= max) {
+//     occurrencesPerBucket[bucketThreshold] = 0;
+//     bucketThreshold+=step;
+//   }
+//
+//   debugger;
+//
+//   return occurrencesPerBucket;
+// };
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var initOccurrencesPerBucket = function initOccurrencesPerBucket() {
   // Init occurrencesPerBucket with bucketThresholds as keys and 0 values
   var occurrencesPerBucket = {};
-  var bucketThreshold = min + step;
+  var buckets = [0.4, 0.8, 1.2, 1.6, 2.0, 2.5, 3.0, 5.0, 7.0, 20.0];
 
-  while (bucketThreshold <= max) {
+  buckets.forEach(function (bucketThreshold) {
     occurrencesPerBucket[bucketThreshold] = 0;
-    bucketThreshold += step;
-  }
+  });
 
   return occurrencesPerBucket;
 };

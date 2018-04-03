@@ -1,25 +1,53 @@
-export const getChartPriceDiffParams = (commodityName, closePrices) => {
-  const title = "Percent Difference In Closing Price from Prior Day";
-  const label = "Price Difference [%]";
+export const getChartPriceDiffParams = (
+  commodityName, percentPricesFromInitPrice
+) => {
+  // const title = "Percent Difference In Closing Price from Prior Day";
+  // const label = "Price Difference [%]";
   // const diffClosePrices = getDiffClosePrices(closePrices);
-  const diffClosePrices = getDiffClosePricePercentages(closePrices);
+  let closePrices = new Array(percentPricesFromInitPrice.length);
 
-  return [title, label, diffClosePrices];
-};
+  let i = 0;
+  while (i < closePrices.length) {
+    closePrices[i] = [];
+    i++;
+  }
 
-const getDiffClosePrices = closePrices => {
-  let diffClosePrices = [];
-
-  closePrices.forEach((closePrice, index) => {
-    diffClosePrices.push(
-      Math.abs(closePrices[index + 1] - closePrice)
-    );
+  percentPricesFromInitPrice.forEach((percentPrice, idx) => {
+    i = 0;
+    while (i < percentPrice.length) {
+      closePrices[idx][i] = percentPrice[i] + 100;
+      i++;
+    }
   });
 
-  diffClosePrices.pop();
+  // const diffClosePrices = getDiffClosePricePercentages(closePrices);
 
+  let diffClosePrices = new Array(percentPricesFromInitPrice.length);
+
+  i = 0;
+  while (i < closePrices.length) {
+    diffClosePrices[i] = [];
+    diffClosePrices[i] = getDiffClosePricePercentages(closePrices[i]);
+    i++;
+  }
+
+  // return [title, label, diffClosePrices];
   return diffClosePrices;
 };
+
+// const getDiffClosePrices = closePrices => {
+//   let diffClosePrices = [];
+//
+//   closePrices.forEach((closePrice, index) => {
+//     diffClosePrices.push(
+//       Math.abs(closePrices[index + 1] - closePrice)
+//     );
+//   });
+//
+//   diffClosePrices.pop();
+//
+//   return diffClosePrices;
+// };
 
 const getDiffClosePricePercentages = closePrices => {
   let diffClosePricePercentages = [];
