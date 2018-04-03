@@ -17282,9 +17282,6 @@ var addCommodity = function addCommodity(chartMain, chartPriceDiff, chartPMF, co
         dates = _filterAndReconcile2[0],
         percentPricesFromInitPrice = _filterAndReconcile2[1];
 
-    // const percentPricesFromInitPrice =
-    //   getChartMainParams(commodityName, closePrices);
-
     var diffClosePrices = (0, _chartPriceDiff.getChartPriceDiffParams)(commodityName, percentPricesFromInitPrice);
 
     var _getChartPMFParams = (0, _chartPMF.getChartPMFParams)(commodityName, diffClosePrices, 40),
@@ -17300,72 +17297,11 @@ var addCommodity = function addCommodity(chartMain, chartPriceDiff, chartPMF, co
   });
 };
 
-// const chartMain = new Chart(canvas1, {
-//   type: 'line',
-//   data: {
-//     labels: [],
-//     datasets: [
-//       {
-//         data: [],
-//         label: "Copper",
-//         borderColor: "orange",
-//         fill: false
-//       },
-//       {}
-//     ]
-//   },
-
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 var removeCommodity = function removeCommodity(chartMain, chartPriceDiff, chartPMF, commodityName) {
   removeDataset(chartMain, commodityName);
   removeDataset(chartPriceDiff, commodityName);
   removeDataset(chartPMF, commodityName);
-  // let newDatasetsArr = [];
-  //
-  // chartMain.data.datasets.forEach(dataset => {
-  //   if (dataset.label !== commodityName) {
-  //     newDatasetsArr.push(dataset);
-  //   }
-  // });
-  //
-  // let i = chartMain.data.datasets.length;
-  // let len = i;
-  //
-  // while (i > 0) {
-  //   chartMain.data.datasets.pop();
-  //   i--;
-  // }
-  //
-  // newDatasetsArr.forEach(dataset => {
-  //   chartMain.data.datasets.push(dataset);
-  // });
-  //
-  // chartMain.update();
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var removeDataset = function removeDataset(chart, commodityName) {
-  var newDatasetsArr = [];
-
-  chart.data.datasets.forEach(function (dataset) {
-    if (dataset.label !== commodityName) {
-      newDatasetsArr.push(dataset);
-    }
-  });
-
-  var i = chart.data.datasets.length;
-  var len = i;
-
-  while (i > 0) {
-    chart.data.datasets.pop();
-    i--;
-  }
-
-  newDatasetsArr.forEach(function (dataset) {
-    chart.data.datasets.push(dataset);
-  });
-
-  chart.update();
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -17375,55 +17311,6 @@ var changeDisplayedCommodities = exports.changeDisplayedCommodities = function c
   } else {
     addCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
   }
-
-  // fetchStock(translateToQuandlCode(commodityName)).then(
-  //   apiResponse => {
-  //
-  //     const [
-  //       dates,
-  //       closePrices
-  //     ] = filterApiResponse(apiResponse);
-  //
-  //     const [
-  //       titleChartMain,
-  //       labelChartMain,
-  //       percentPricesFromInitPrice
-  //     ] = getChartMainParams(commodityName, closePrices);
-  //
-  //     const [
-  //       titleChartPriceDiff,
-  //       labelChartPriceDiff,
-  //       diffClosePrices
-  //     ] = getChartPriceDiffParams(commodityName, closePrices);
-  //
-  //     const [
-  //       titlePMF,
-  //       labelPMF,
-  //       priceBuckets,
-  //       bucketProbabilities
-  //     ] = getChartPMFParams(commodityName, diffClosePrices, 40);
-  //
-  //     updateChart(
-  //       chartMain,
-  //       titleChartMain,
-  //       labelChartMain,
-  //       dates,
-  //       percentPricesFromInitPrice
-  //     );
-  //
-  //     updateChart(
-  //       chartPriceDiff,
-  //       titleChartPriceDiff,
-  //       labelChartPriceDiff,
-  //       dates,
-  //       diffClosePrices
-  //     );
-  //
-  //     updateChart(
-  //       chartPMF, titlePMF, labelPMF, priceBuckets, bucketProbabilities
-  //     );
-  //   }
-  // );
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -17538,6 +17425,31 @@ var reconcile = function reconcile(newDates, newClosePrices, alreadyChartedDates
 
   // Return date arr and arr of arr for price datasets
   return [reconciledDates, reconciledClosePrices];
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var removeDataset = function removeDataset(chart, commodityName) {
+  var newDatasetsArr = [];
+
+  chart.data.datasets.forEach(function (dataset) {
+    if (dataset.label !== commodityName) {
+      newDatasetsArr.push(dataset);
+    }
+  });
+
+  var i = chart.data.datasets.length;
+  var len = i;
+
+  while (i > 0) {
+    chart.data.datasets.pop();
+    i--;
+  }
+
+  newDatasetsArr.forEach(function (dataset) {
+    chart.data.datasets.push(dataset);
+  });
+
+  chart.update();
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
