@@ -18,9 +18,6 @@ const addCommodity = (
         chartMain.data.labels, chartMain.data.datasets, apiResponse
       );
 
-      // const percentPricesFromInitPrice =
-      //   getChartMainParams(commodityName, closePrices);
-
       const diffClosePrices =
         getChartPriceDiffParams(commodityName, percentPricesFromInitPrice);
 
@@ -50,21 +47,6 @@ const addCommodity = (
   );
 };
 
-// const chartMain = new Chart(canvas1, {
-//   type: 'line',
-//   data: {
-//     labels: [],
-//     datasets: [
-//       {
-//         data: [],
-//         label: "Copper",
-//         borderColor: "orange",
-//         fill: false
-//       },
-//       {}
-//     ]
-//   },
-
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const removeCommodity = (
   chartMain, chartPriceDiff, chartPMF, commodityName
@@ -72,52 +54,6 @@ const removeCommodity = (
   removeDataset(chartMain, commodityName);
   removeDataset(chartPriceDiff, commodityName);
   removeDataset(chartPMF, commodityName);
-  // let newDatasetsArr = [];
-  //
-  // chartMain.data.datasets.forEach(dataset => {
-  //   if (dataset.label !== commodityName) {
-  //     newDatasetsArr.push(dataset);
-  //   }
-  // });
-  //
-  // let i = chartMain.data.datasets.length;
-  // let len = i;
-  //
-  // while (i > 0) {
-  //   chartMain.data.datasets.pop();
-  //   i--;
-  // }
-  //
-  // newDatasetsArr.forEach(dataset => {
-  //   chartMain.data.datasets.push(dataset);
-  // });
-  //
-  // chartMain.update();
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const removeDataset = (chart, commodityName) => {
-  let newDatasetsArr = [];
-
-  chart.data.datasets.forEach(dataset => {
-    if (dataset.label !== commodityName) {
-      newDatasetsArr.push(dataset);
-    }
-  });
-
-  let i = chart.data.datasets.length;
-  let len = i;
-
-  while (i > 0) {
-    chart.data.datasets.pop();
-    i--;
-  }
-
-  newDatasetsArr.forEach(dataset => {
-    chart.data.datasets.push(dataset);
-  });
-
-  chart.update();
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -129,55 +65,6 @@ export const changeDisplayedCommodities = (
   } else {
     addCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
   }
-
-  // fetchStock(translateToQuandlCode(commodityName)).then(
-  //   apiResponse => {
-  //
-  //     const [
-  //       dates,
-  //       closePrices
-  //     ] = filterApiResponse(apiResponse);
-  //
-  //     const [
-  //       titleChartMain,
-  //       labelChartMain,
-  //       percentPricesFromInitPrice
-  //     ] = getChartMainParams(commodityName, closePrices);
-  //
-  //     const [
-  //       titleChartPriceDiff,
-  //       labelChartPriceDiff,
-  //       diffClosePrices
-  //     ] = getChartPriceDiffParams(commodityName, closePrices);
-  //
-  //     const [
-  //       titlePMF,
-  //       labelPMF,
-  //       priceBuckets,
-  //       bucketProbabilities
-  //     ] = getChartPMFParams(commodityName, diffClosePrices, 40);
-  //
-  //     updateChart(
-  //       chartMain,
-  //       titleChartMain,
-  //       labelChartMain,
-  //       dates,
-  //       percentPricesFromInitPrice
-  //     );
-  //
-  //     updateChart(
-  //       chartPriceDiff,
-  //       titleChartPriceDiff,
-  //       labelChartPriceDiff,
-  //       dates,
-  //       diffClosePrices
-  //     );
-  //
-  //     updateChart(
-  //       chartPMF, titlePMF, labelPMF, priceBuckets, bucketProbabilities
-  //     );
-  //   }
-  // );
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -293,6 +180,31 @@ const reconcile = (
 
   // Return date arr and arr of arr for price datasets
   return [reconciledDates, reconciledClosePrices];
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const removeDataset = (chart, commodityName) => {
+  let newDatasetsArr = [];
+
+  chart.data.datasets.forEach(dataset => {
+    if (dataset.label !== commodityName) {
+      newDatasetsArr.push(dataset);
+    }
+  });
+
+  let i = chart.data.datasets.length;
+  let len = i;
+
+  while (i > 0) {
+    chart.data.datasets.pop();
+    i--;
+  }
+
+  newDatasetsArr.forEach(dataset => {
+    chart.data.datasets.push(dataset);
+  });
+
+  chart.update();
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
