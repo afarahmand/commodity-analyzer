@@ -17495,6 +17495,12 @@ var _chart2 = _interopRequireDefault(_chart);
 
 var _chartHub = __webpack_require__(125);
 
+var _chartMain = __webpack_require__(177);
+
+var _chartPriceDiff = __webpack_require__(178);
+
+var _chartPMF = __webpack_require__(179);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -17516,71 +17522,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   _chart2.default.defaults.global.defaultFontFamily = 'Comfortaa';
 
-  var chartMain = new _chart2.default(canvas1, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: 'Prices of Selected Commodities'
-      }
-    }
-  });
-
-  var chartPriceDiff = new _chart2.default(canvas2, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: '% Difference in Closing Price from Prior Day'
-      }
-    }
-  });
-
-  var chartPMF = new _chart2.default(canvas3, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: 'Probability of % Difference'.concat(' Between Consecutive Day Closing Prices')
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            callback: function callback(tick, index, ticks) {
-              var currTick = (0, _chartHub.roundToHundreths)(tick).toString();
-
-              if (index === 0) {
-                return "0 - ".concat(currTick);
-              } else {
-                return (0, _chartHub.roundToHundreths)(ticks[index - 1]).toString().concat(" - ").concat(currTick);
-              }
-            } // return string here for the tick.
-          }
-        }]
-      }
-    }
-  });
+  var chartMain = (0, _chartMain.createChartMain)(canvas1);
+  var chartPriceDiff = (0, _chartPriceDiff.createChartPriceDiff)(canvas2);
+  var chartPMF = (0, _chartPMF.createChartPMF)(canvas3);
 
   for (var i = 0; i < 7; i++) {
-    document.getElementById('rb' + i).addEventListener("click", function (e) {
+    document.getElementById('cb' + i).addEventListener("click", function (e) {
       (0, _chartHub.changeDisplayedCommodities)(chartMain, chartPriceDiff, chartPMF, e.target.value);
     });
   }
@@ -30714,9 +30661,15 @@ var translateToQuandlCode = exports.translateToQuandlCode = function translateTo
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getChartMainParams = exports.convertToPercentPrices = undefined;
+exports.createChartMain = exports.getChartMainParams = exports.convertToPercentPrices = undefined;
+
+var _chart = __webpack_require__(127);
+
+var _chart2 = _interopRequireDefault(_chart);
 
 var _chartHub = __webpack_require__(125);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var convertToPercentPrices = exports.convertToPercentPrices = function convertToPercentPrices(inputPrices) {
   var initPrices = new Array(inputPrices.length); // First price of each dataset
@@ -30766,6 +30719,24 @@ var getLabel = function getLabel(commodityName) {
   }
 };
 
+var createChartMain = exports.createChartMain = function createChartMain(canvas) {
+  return new _chart2.default(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Prices of Selected Commodities'
+      }
+    }
+  });
+};
+
 /***/ }),
 /* 178 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -30776,6 +30747,32 @@ var getLabel = function getLabel(commodityName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getChartPriceDiffParams = exports.createChartPriceDiff = undefined;
+
+var _chart = __webpack_require__(127);
+
+var _chart2 = _interopRequireDefault(_chart);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var createChartPriceDiff = exports.createChartPriceDiff = function createChartPriceDiff(canvas) {
+  return new _chart2.default(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: '% Difference in Closing Price from Prior Day'
+      }
+    }
+  });
+};
+
 var getChartPriceDiffParams = exports.getChartPriceDiffParams = function getChartPriceDiffParams(commodityName, percentPricesFromInitPrice) {
   // const title = "Percent Difference In Closing Price from Prior Day";
   // const label = "Price Difference [%]";
@@ -30847,6 +30844,16 @@ var getDiffClosePricePercentages = function getDiffClosePricePercentages(closePr
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getChartPMFParams = exports.createChartPMF = undefined;
+
+var _chart = __webpack_require__(127);
+
+var _chart2 = _interopRequireDefault(_chart);
+
+var _chartHub = __webpack_require__(125);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 var calculateOccurrencesPerBucket = function calculateOccurrencesPerBucket(sortedPrices) {
   // const calculateOccurrencesPerBucket = (sortedPrices, min, max, step) => {
@@ -30884,6 +30891,40 @@ var convertOccurrencesToProbabilities = function convertOccurrencesToProbabiliti
   }
 
   return probabilitiesPerThreshold;
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var createChartPMF = exports.createChartPMF = function createChartPMF(canvas) {
+  return new _chart2.default(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Probability of % Difference'.concat(' Between Consecutive Day Closing Prices')
+      },
+      scales: {
+        xAxes: [{
+          ticks: {
+            callback: function callback(tick, index, ticks) {
+              var currTick = (0, _chartHub.roundToHundreths)(tick).toString();
+
+              if (index === 0) {
+                return "0 - ".concat(currTick);
+              } else {
+                return (0, _chartHub.roundToHundreths)(ticks[index - 1]).toString().concat(" - ").concat(currTick);
+              }
+            } // return string here for the tick.
+          }
+        }]
+      }
+    }
+  });
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
