@@ -1,22 +1,22 @@
-<h1>Stock Alerter</h1>
-<a href="https://afarahmand.github.io/stock-alerter/">Live App</a>
+<h1>Commodity Analyzer</h1>
+<a href="https://afarahmand.github.io/commodity-analyzer/">Live App</a>
 
 <h2>Background and Overview</h2>
-Stock alerter is a tool using chart.js to chart information related to stocks and commodities.
+Commodity Analyzer is a tool using chart.js to chart information related to commodities.
 
-Users input a stock, commodity, or a combination thereof expressed as a mathematical equation, and are shown historical information about their selection.  Since a stock has multiple values throughout a day, I anticipate using only one or more of the close price, minimum, or maximum price.
+Users select one or more commodities and are shown historical information about their selection.  Since a commodity has multiple values throughout a day, I anticipate using only one or more of the close price, minimum, or maximum price.
 
-Stock Alerter will use the Quandl API to access stock and commodity data.
+Commodity Analyzer will use the Quandl API to access stock and commodity data.
 
 <h2>Functionality & MVP</h2>
 
-- [ ]  As a first feature, users are able to view a first chart of time-series information related to a selected stock, commodity, or a combination thereof.  Displayed information includes at least price information.
+- [ ]  As a first feature, users are able to view a first chart of time-series information related to one or more selected commodities.  Displayed information includes at least price information.
 
 <h2>Wireframes</h2>
 The app will include a single screen with the first and second charts together with an input text box and a submit button.
 
 [https://raw.githubusercontent.com/afarahmand/stock-alerter/master/stock_alerter.png]
-(Stock Alerter)
+(Commodity Analyzer)
 
 <h2>Architecture and Technologies</h2>
 The following technologies will be used for this project:
@@ -30,7 +30,7 @@ The following technologies will be used for this project:
 It is anticipated that there will be 4 scripts in addition to the webpack entry file:
 <ul>
   <li>chart.js - the standard chart.js library for charting</li>
-  <li>stock_util.js - a script for constructing one or more requests to the Quandl API based on a user selected stock, commodity, or combination thereof</li>
+  <li>stock_api_util.js - a script for constructing one or more requests to the Quandl API based on a user selected stock, commodity, or combination thereof</li>
   <li>chart1.js - a script for creating a line chart based on the user selected input that displays either a chart of time vs. price or time vs. the result of the mathematical expression</li>
 </ul>
 
