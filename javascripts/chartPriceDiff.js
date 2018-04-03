@@ -1,3 +1,23 @@
+import Chart from 'chart.js';
+
+export const createChartPriceDiff = canvas => (
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: '% Difference in Closing Price from Prior Day'
+      }
+    }
+  })
+);
+
 export const getChartPriceDiffParams = (
   commodityName, percentPricesFromInitPrice
 ) => {

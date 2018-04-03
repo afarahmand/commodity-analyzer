@@ -1,3 +1,4 @@
+import Chart from 'chart.js';
 import { roundToHundreths } from './chartHub';
 
 export const convertToPercentPrices = inputPrices => {
@@ -49,3 +50,21 @@ const getLabel = commodityName => {
       return "[$/oz]";
   }
 };
+
+export const createChartMain = canvas => (
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Prices of Selected Commodities'
+      }
+    }
+  })
+);

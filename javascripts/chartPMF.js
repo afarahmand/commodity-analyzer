@@ -1,3 +1,6 @@
+import Chart from 'chart.js';
+import { roundToHundreths } from './chartHub';
+
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const calculateOccurrencesPerBucket = sortedPrices => {
 // const calculateOccurrencesPerBucket = (sortedPrices, min, max, step) => {
@@ -50,6 +53,43 @@ const convertOccurrencesToProbabilities = (
 
   return probabilitiesPerThreshold;
 };
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export const createChartPMF = canvas => (
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Probability of % Difference'.concat(
+          ' Between Consecutive Day Closing Prices')
+      },
+      scales: {
+        xAxes: [{
+          ticks: {
+            callback: function(tick, index, ticks) {
+              const currTick = roundToHundreths(tick).toString();
+
+              if (index === 0) {
+                return "0 - ".concat(currTick);
+              } else {
+                return roundToHundreths(ticks[index-1]).toString()
+                .concat(" - ")
+                .concat(currTick);
+              }
+            }// return string here for the tick.
+          }
+        }]
+      }
+    }
+  })
+);
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export const getChartPMFParams = (commodityName, prices, segments) => {

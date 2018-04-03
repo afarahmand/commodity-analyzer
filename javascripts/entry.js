@@ -1,5 +1,8 @@
 import Chart from 'chart.js';
 import { changeDisplayedCommodities, roundToHundreths } from './chartHub';
+import { createChartMain } from './chartMain';
+import { createChartPriceDiff } from './chartPriceDiff';
+import { createChartPMF } from './chartPMF';
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas1 = document.getElementById("main-chart");
@@ -20,71 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Chart.defaults.global.defaultFontFamily = 'Comfortaa';
 
-  const chartMain = new Chart(canvas1, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: 'Prices of Selected Commodities'
-      }
-    }
-  });
-
-  const chartPriceDiff = new Chart(canvas2, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: '% Difference in Closing Price from Prior Day'
-      }
-    }
-  });
-
-  const chartPMF = new Chart(canvas3, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: 'Probability of % Difference'.concat(
-          ' Between Consecutive Day Closing Prices')
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            callback: function(tick, index, ticks) {
-              const currTick = roundToHundreths(tick).toString();
-
-              if (index === 0) {
-                return "0 - ".concat(currTick);
-              } else {
-                return roundToHundreths(ticks[index-1]).toString()
-                .concat(" - ")
-                .concat(currTick);
-              }
-            }// return string here for the tick.
-          }
-        }]
-      }
-    }
-  });
+  const chartMain = createChartMain(canvas1);
+  const chartPriceDiff = createChartPriceDiff(canvas2);
+  const chartPMF = createChartPMF(canvas3);
 
   for(let i = 0; i < 7; i++) {
     document.getElementById(`cb${i}`)
