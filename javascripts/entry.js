@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   for(let i = 0; i < 7; i++) {
-    document.getElementById(`rb${i}`)
+    document.getElementById(`cb${i}`)
     .addEventListener("click", e => {
       changeDisplayedCommodities(
         chartMain, chartPriceDiff, chartPMF, e.target.value
