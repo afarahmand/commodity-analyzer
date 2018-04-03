@@ -1,5 +1,5 @@
 {
-  "name": "stock-alerter",
+  "name": "commodity-analyzer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/afarahmand/stock-alerter.git"
+    "url": "git+https://github.com/afarahmand/commodity-analyzer.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/afarahmand/stock-alerter/issues"
+    "url": "https://github.com/afarahmand/commodity-analyzer/issues"
   },
-  "homepage": "https://github.com/afarahmand/stock-alerter#readme",
+  "homepage": "https://github.com/afarahmand/commodity-analyzer#readme",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
