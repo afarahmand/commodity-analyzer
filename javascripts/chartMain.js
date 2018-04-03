@@ -1,6 +1,31 @@
 import Chart from 'chart.js';
 import { roundToHundreths } from './chartHub';
 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export const createChartMain = canvas => (
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: []
+    },
+    options: {
+      elements: {
+        point: {
+          radius: 0
+        }
+      },
+      responsive: false,
+      title: {
+        display: true,
+        fontSize: 32,
+        text: 'Prices of Selected Commodities'
+      }
+    }
+  })
+);
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export const convertToPercentPrices = inputPrices => {
   let initPrices = new Array(inputPrices.length); // First price of each dataset
   inputPrices.forEach((inputPrice, idx) => {
@@ -23,6 +48,7 @@ export const convertToPercentPrices = inputPrices => {
   return percentPrices;
 };
 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export const getChartMainParams = (commodityName, closePrices) => {
   // const title = "Price of "
   //   .concat(commodityName)
@@ -35,6 +61,7 @@ export const getChartMainParams = (commodityName, closePrices) => {
   return percentPricesFromInitPrice;
 };
 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const getLabel = commodityName => {
   switch(commodityName) {
     case "Copper":
@@ -50,21 +77,3 @@ const getLabel = commodityName => {
       return "[$/oz]";
   }
 };
-
-export const createChartMain = canvas => (
-  new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: []
-    },
-    options: {
-      responsive: false,
-      title: {
-        display: true,
-        fontSize: 32,
-        text: 'Prices of Selected Commodities'
-      }
-    }
-  })
-);
