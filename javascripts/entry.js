@@ -1,5 +1,5 @@
 import Chart from 'chart.js';
-import { changeDisplayedCommodity } from './chartHub';
+import { changeDisplayedCommodities, roundToHundreths } from './chartHub';
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas1 = document.getElementById("main-chart");
