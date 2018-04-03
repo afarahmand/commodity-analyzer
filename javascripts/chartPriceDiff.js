@@ -8,6 +8,11 @@ export const createChartPriceDiff = canvas => (
       datasets: []
     },
     options: {
+      elements: {
+        point: {
+          radius: 0
+        }
+      },
       responsive: false,
       title: {
         display: true,
