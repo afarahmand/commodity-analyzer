@@ -1,0 +1,23 @@
+GET https://www.quandl.com/api/v3/datasets/{database_code}/{dataset_code}/data.{return_format}
+
+https://www.quandl.com/api/v3/datasets/WIKI/FB/metadata.json
+metadata
+
+https://www.quandl.com/api/v3/datatables/WIKI/PRICES/metadata.json?api_key=hkJD88Y1dNFnFA5xjn3q
+
+
+https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=hkJD88Y1dNFnFA5xjn3q&limit=1&order=asc
+
+CHRIS/CME_GC1 - gold
+CHRIS/CME_SI1 - silver
+CHRIS/CME_PL1 - plat
+CHRIS/CME_PA1 - palladium
+CHRIS/CME_HG1 - copper
+CHRIS/CME_CL1 - crude oil
+WIKI/FB
+
+hkJD88Y1dNFnFA5xjn3q
+
+
+
+https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json?api_key=YOURAPIKEY&
