@@ -1,31 +1,37 @@
-const filterColumns = apiResponse => {
-  let dates = [];
-  let closePrices = [];
+import { roundToHundreths } from './chartHub';
 
-  apiResponse.dataset_data.data.forEach(row => {
-      if (row[4] !== null) {
-        dates.unshift(row[0]);
-        closePrices.unshift(row[4]);
-      }
-      // else if (lastNonNullPrice) {
-      //   dates.unshift(row[0]);
-      //   closePrices.unshift(lastNonNullPrice);
-      // }
-    }
-  );
+export const convertToPercentPrices = inputPrices => {
+  let initPrices = new Array(inputPrices.length); // First price of each dataset
+  inputPrices.forEach((inputPrice, idx) => {
+    initPrices[idx] = inputPrice[0];
+  });
 
-  return [dates, closePrices];
+  let percentPrices = new Array(inputPrices.length);
+
+  let i = 0;
+  while (i < inputPrices.length) {
+    percentPrices[i] = [];
+    inputPrices[i].forEach(inputPrice => {
+      percentPrices[i].push(
+        roundToHundreths(100*(inputPrice - initPrices[i])/initPrices[i])
+      );
+    });
+    i+=1;
+  }
+
+  return percentPrices;
 };
 
-export const getChartMainParams = (commodityName, apiResponse) => {
-  const title = "Price of "
-    .concat(commodityName)
-    .concat(" Front-Month Futures Contract");
-  const label = getLabel(commodityName);
+export const getChartMainParams = (commodityName, closePrices) => {
+  // const title = "Price of "
+  //   .concat(commodityName)
+  //   .concat(" Front-Month Futures Contract");
+  // const label = getLabel(commodityName);
+  const percentPricesFromInitPrice = convertToPercentPrices(closePrices);
 
-  const [dates, closePrices] = filterColumns(apiResponse);
-
-  return [title, label, dates, closePrices];
+  // return [title, label, dates, closePrices];
+  // return [title, label, percentPricesFromInitPrice];
+  return percentPricesFromInitPrice;
 };
 
 const getLabel = commodityName => {
