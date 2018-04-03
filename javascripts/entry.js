@@ -35,9 +35,4 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
   }
-
-  // document.getElementById("input-text")
-  // .addEventListener("keyup", e => {
-  //   console.log(e.target.value);
-  // });
 });
