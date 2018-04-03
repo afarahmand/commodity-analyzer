@@ -5,6 +5,7 @@ export const fetchStock = quandlCode => {
     url: `https://www.quandl.com/api/v3/datasets/`
       .concat(`${quandlCode}/data.json?`)
       .concat(`api_key=${APIKEY}&`)
+      .concat('column_index=4&')
       .concat(`limit=1000`),
     method: 'GET'
   });
