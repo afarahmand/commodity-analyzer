@@ -1,5 +1,5 @@
 import Chart from 'chart.js';
-import { roundToHundreths } from './chartHub';
+import { roundToHundreths } from './chartControl';
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export const createChartMain = canvas => (
@@ -19,7 +19,7 @@ export const createChartMain = canvas => (
       title: {
         display: true,
         fontSize: 32,
-        text: 'Prices of Selected Commodities'
+        text: 'Front-Month Futures Contract Price'
       }
     }
   })
