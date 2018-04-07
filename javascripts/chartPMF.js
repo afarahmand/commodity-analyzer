@@ -1,24 +1,9 @@
 import Chart from 'chart.js';
-import { roundToHundreths } from './chartHub';
+import { roundToHundreths } from './chartControl';
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const calculateOccurrencesPerBucket = sortedPrices => {
-// const calculateOccurrencesPerBucket = (sortedPrices, min, max, step) => {
-  // let occurrencesPerBucket = initOccurrencesPerBucket(min, max, step);
-  const buckets = [
-    0.4,
-    0.8,
-    1.2,
-    1.6,
-    2.0,
-    2.5,
-    3.0,
-    5.0,
-    7.0,
-    20.0
-  ];
-
-  let occurrencesPerBucket = initOccurrencesPerBucket();
+const calculateOccurrencesPerBucket = (buckets, sortedPrices) => {
+  let occurrencesPerBucket = initOccurrencesPerBucket(buckets);
   let bucketThreshold = buckets[0];
   let bucketIndex = 0;
 
@@ -44,10 +29,10 @@ const convertOccurrencesToProbabilities = (
 ) => {
   let probabilitiesPerThreshold = {};
 
-  for (let key in occurrencesPerBucket) {
-    if (occurrencesPerBucket.hasOwnProperty(key)) {
-      probabilitiesPerThreshold[key] =
-        100*occurrencesPerBucket[key]/numberOfSamples;
+  for (let bucket in occurrencesPerBucket) {
+    if (occurrencesPerBucket.hasOwnProperty(bucket)) {
+      probabilitiesPerThreshold[bucket] =
+        100*occurrencesPerBucket[bucket]/numberOfSamples;
     }
   }
 
@@ -92,108 +77,93 @@ export const createChartPMF = canvas => (
 );
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export const getChartPMFParams = (commodityName, prices, segments) => {
-  let sortedPricesManyDatasets = new Array(prices.length);
-  let occurrencesPerBucket = new Array(prices.length);
-  let probabilitiesPerBucket = new Array(prices.length);
+// gets parameters to chart probability mass function
+export const getChartPMFParams = diffClosePrices => {
+  let [
+    sortedPricesManyDatasets,
+    occurrencesPerBucket,
+    probabilitiesPerBucket
+  ] = initEmptyDataStructures(diffClosePrices.length);
 
-  let i = 0;
-  while (i < sortedPricesManyDatasets.length) {
-    sortedPricesManyDatasets[i] = [];
-    occurrencesPerBucket[i] = [];
-    probabilitiesPerBucket[i] = [];
+  sortedPricesManyDatasets = sortPrices(diffClosePrices);
 
-    sortedPricesManyDatasets[i] = prices[i].slice(0).sort(
-      function(a, b){return a - b;}
-    );
-    i++;
-  }
+  const buckets = initBuckets();
 
-  // sortedPrices = prices.slice(0).sort(function(a, b){return a - b;});
-  let min, max, step;
-
-  sortedPricesManyDatasets.forEach((sortedPrices, datasetIndex) => {
-    min = sortedPrices[0];
-    max = sortedPrices[sortedPrices.length - 1];
-    step = (max - min)/segments;
-
+  sortedPricesManyDatasets.forEach((sortedPricesOneDataset, datasetIndex) => {
     occurrencesPerBucket[datasetIndex] = calculateOccurrencesPerBucket(
-      sortedPrices, min, max, step
+      buckets, sortedPricesOneDataset
     );
 
     probabilitiesPerBucket[datasetIndex] = convertOccurrencesToProbabilities(
-      occurrencesPerBucket[datasetIndex], sortedPrices.length
+      occurrencesPerBucket[datasetIndex], sortedPricesOneDataset.length
     );
   });
 
-  // const title = "Probability of the Difference
-  // in Next Day Closing Prices Being Within an Interval";
-  // const label = "Probability [%]";
+  let Y = new Array(diffClosePrices.length);
 
-  // const X = Object.keys(occurrencesPerBucket);
-  // const Y = X.map(pB => (occurrencesPerBucket[pB]));
-
-  // const X = Object.keys(probabilitiesPerBucket);
-  const X = [
-    0.4,
-    0.8,
-    1.2,
-    1.6,
-    2.0,
-    2.5,
-    3.0,
-    5.0,
-    7.0,
-    20.0
-  ];
-  let Y = new Array(prices.length);
-
-  i = 0;
-  while (i < prices.length) {
-    Y[i] = X.map(pB => (probabilitiesPerBucket[i][pB]));
+  let i = 0;
+  while (i < diffClosePrices.length) {
+    Y[i] = buckets.map(pB => (probabilitiesPerBucket[i][pB]));
     i++;
   }
 
-  // return [title, label, X, Y];
-  return [X, Y];
+  return [buckets, Y];
+};
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const initBuckets = () => (
+  [
+    0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.2, 2.6, 3.0,
+    3.5, 4.0, 4.5, 5.0, 5.5, 8.0, 20.0
+  ]
+);
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const initEmptyArrayOfArrays = numberOfDatasets => {
+  let ds = new Array(numberOfDatasets);
+
+  let i = 0;
+  while (i < numberOfDatasets) {
+    ds[i] = [];
+    i++;
+  }
+
+  return ds;
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// const initOccurrencesPerBucket = (min, max, step) => {
-//   // Init occurrencesPerBucket with bucketThresholds as keys and 0 values
-//   let occurrencesPerBucket = {};
-//   let bucketThreshold = min+step;
-//
-//   while (bucketThreshold <= max) {
-//     occurrencesPerBucket[bucketThreshold] = 0;
-//     bucketThreshold+=step;
-//   }
-//
-//   debugger;
-//
-//   return occurrencesPerBucket;
-// };
+const initEmptyDataStructures = numberOfDatasets => {
+  let sortedPricesManyDatasets = initEmptyArrayOfArrays(numberOfDatasets);
+  let occurrencesPerBucket = initEmptyArrayOfArrays(numberOfDatasets);
+  let probabilitiesPerBucket = initEmptyArrayOfArrays(numberOfDatasets);
+
+  return [
+    sortedPricesManyDatasets, occurrencesPerBucket, probabilitiesPerBucket
+  ];
+};
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const initOccurrencesPerBucket = () => {
+const initOccurrencesPerBucket = buckets => {
   // Init occurrencesPerBucket with bucketThresholds as keys and 0 values
   let occurrencesPerBucket = {};
-  const buckets = [
-    0.4,
-    0.8,
-    1.2,
-    1.6,
-    2.0,
-    2.5,
-    3.0,
-    5.0,
-    7.0,
-    20.0
-  ];
 
   buckets.forEach(bucketThreshold => {
     occurrencesPerBucket[bucketThreshold] = 0;
   });
 
   return occurrencesPerBucket;
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const sortPrices = diffClosePrices => {
+  let sortedPrices = initEmptyArrayOfArrays(diffClosePrices.length);
+
+  let i = 0;
+  while (i < diffClosePrices.length) {
+    sortedPrices[i] = diffClosePrices[i].slice(0).sort(
+      function(a, b){return a - b;}
+    );
+    i++;
+  }
+
+  return sortedPrices;
 };
