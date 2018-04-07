@@ -1,5 +1,5 @@
 import Chart from 'chart.js';
-import { changeDisplayedCommodities, roundToHundreths } from './chartHub';
+import { changeDisplayedCommodities, roundToHundreths } from './chartControl';
 import { createChartMain } from './chartMain';
 import { createChartPriceDiff } from './chartPriceDiff';
 import { createChartPMF } from './chartPMF';
