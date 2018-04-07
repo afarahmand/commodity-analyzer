@@ -9,22 +9,23 @@ const addCommodity = (
 ) => {
   fetchStock(translateToQuandlCode(commodityName)).then(
     apiResponse => {
-      // (1) Grab new data via API
-      // (2) Create new date arr with dates that all datasets have data
-      //   in this step, only new data is reconciled
-      // (3) Reconcile already charted data (not necessary)
+      // (1) Get data for new commodity via API, filter so only dates
+      //   w/non-null close prices remain
+      // (2) Create new date arr with dates for which all datasets have
+      //   data
 
-      const [dates, percentPricesFromInitPrice] = filterAndReconcile(
-        chartMain.data.labels, chartMain.data.datasets, apiResponse
+      const [newDates, newClosePrices] = filterNullData(apiResponse);
+      const [dates, percentPricesFromInitPrice] = reconcile(
+        newDates, newClosePrices, chartMain.data.labels, chartMain.data.datasets
       );
 
       const diffClosePrices =
-        getChartPriceDiffParams(commodityName, percentPricesFromInitPrice);
+        getChartPriceDiffParams(percentPricesFromInitPrice);
 
       const [
         priceBuckets,
         bucketProbabilities
-      ] = getChartPMFParams(commodityName, diffClosePrices, 40);
+      ] = getChartPMFParams(diffClosePrices);
 
       updateChart(
         chartMain,
@@ -41,26 +42,20 @@ const addCommodity = (
       );
 
       updateChart(
-        chartPMF, priceBuckets, bucketProbabilities, commodityName
+        chartPMF,
+        priceBuckets,
+        bucketProbabilities,
+        commodityName
       );
     }
   );
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const removeCommodity = (
-  chartMain, chartPriceDiff, chartPMF, commodityName
-) => {
-  removeDataset(chartMain, commodityName);
-  removeDataset(chartPriceDiff, commodityName);
-  removeDataset(chartPMF, commodityName);
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export const changeDisplayedCommodities = (
   chartMain, chartPriceDiff, chartPMF, commodityName
 ) => {
-  if (chartIncludesCommodity(chartMain, commodityName)) {
+  if (doesChartIncludeCommodity(chartMain, commodityName)) {
     removeCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
   } else {
     addCommodity(chartMain, chartPriceDiff, chartPMF, commodityName);
@@ -68,7 +63,7 @@ export const changeDisplayedCommodities = (
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const chartIncludesCommodity = (chart, commodityName) => {
+const doesChartIncludeCommodity = (chart, commodityName) => {
   let i = 0;
   while (i < chart.data.datasets.length) {
     if (chart.data.datasets[i].label === commodityName) {
@@ -93,24 +88,9 @@ const clearChart = chart => {
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// Filters API response to remove bad data then
-//   further limits data to those dates for which all datasets (already
-//   charted and new) have good data
-const filterAndReconcile = (
-  alreadyChartedDates, alreadyChartedDatasets, apiResponse
-) => {
-  let [newDates, newClosePrices] = filterApiResponse(apiResponse);
-
-  let [reconciledDates, reconciledClosePrices] = reconcile(
-    newDates, newClosePrices, alreadyChartedDates, alreadyChartedDatasets
-  );
-
-  return [reconciledDates, reconciledClosePrices];
-};
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Filter out bad data received from server
-const filterApiResponse = apiResponse => {
+// Some dates have null prices.  We want to filter these out.
+const filterNullData = apiResponse => {
   let dates = [];
   let closePrices = [];
 
@@ -146,6 +126,8 @@ const getColor = commodityName => {
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Filters data to those dates for which all datasets (already
+//   charted and new) have good (non-null) data
 const reconcile = (
   newDates, newClosePrices, alreadyChartedDates, alreadyChartedDatasets
 ) => {
@@ -183,6 +165,15 @@ const reconcile = (
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+const removeCommodity = (
+  chartMain, chartPriceDiff, chartPMF, commodityName
+) => {
+  removeDataset(chartMain, commodityName);
+  removeDataset(chartPriceDiff, commodityName);
+  removeDataset(chartPMF, commodityName);
+};
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const removeDataset = (chart, commodityName) => {
   let newDatasetsArr = [];
 
@@ -208,9 +199,7 @@ const removeDataset = (chart, commodityName) => {
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export const roundToHundreths = num => (
-  Math.round(100*parseFloat(num))/100
-);
+export const roundToHundreths = num => (Math.round(100*parseFloat(num))/100);
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const updateChart = (
@@ -227,7 +216,6 @@ const updateChart = (
       fill: false
     }
   );
-
 
   let i = 0;
   while (i < dates.length) {
