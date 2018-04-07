@@ -1,13 +1,6 @@
-/* font-family: 'Comfortaa', cursive;
-font-family: 'Poiret One', cursive;
-font-family: 'Audiowide', cursive; */
-
-/* rgba(155, 204, 109, 0.3) green */
-/* rgba(106,204,205) blue */
-/* rgba(253,104,105) red */
-
 body {
   font-family: 'Audiowide', cursive;
+  margin-bottom: 20px;
 }
 
 canvas {
@@ -42,17 +35,6 @@ header {
   padding: 10px;
   background-color: rgba(253,104,105, 0.5);
 }
-
-/* form#input-form {
-  width: 90%;
-  margin: 0 auto;
-} */
-
-/* input[type="text"] {
-  border: 1px solid black;
-  padding: 10px;
-  width: 100%;
-} */
 
 input[type="radio"] {
   margin-right: 2px;
