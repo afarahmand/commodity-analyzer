@@ -19127,7 +19127,7 @@ var createChartMain = exports.createChartMain = function createChartMain(canvas)
       title: {
         display: true,
         fontSize: 32,
-        text: 'Front-Month Futures Contract Price'
+        text: 'Front-Month Futures Contract Price Change [%]'
       }
     }
   });
